@@ -24,6 +24,7 @@ int main(int argc, char **argv) {
 
 	clock_t end = clock();
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+	std::cout << __cplusplus << std::endl;
 	std::cout << "Done [Elapsed: " << elapsed_secs << "\"]" << std::endl;
 
 	return EXIT_SUCCESS;
