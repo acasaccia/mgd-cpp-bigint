@@ -12,13 +12,10 @@
 #include <vector>
 
 BigInt::BigInt() {
-	mRepresentation = std::vector<bool> ();
-	mRepresentation.push_back(false);
+	mRepresentation = std::vector<digit_t> ();
+	mRepresentation.push_back(0);
 }
 
 BigInt::BigInt(int iInteger) {
-	while ( iInteger > 1 ) {
-		iInteger%=2;
-		mRepresentation.push_back(static_cast<bool>(iInteger));
-	}
+	
 }

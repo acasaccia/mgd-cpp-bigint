@@ -65,6 +65,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigInt.h" />
+    <ClInclude Include="Digit.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

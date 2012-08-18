@@ -26,5 +26,13 @@
     <ClInclude Include="BigInt.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="Digit.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Readme.txt">
+      <Filter>File di risorse</Filter>
+    </None>
   </ItemGroup>
 </Project>
