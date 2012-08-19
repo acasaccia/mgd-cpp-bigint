@@ -9,11 +9,22 @@ date 5 August 2012
 ===============================================================================
 
 I made the basic design choices after reading the arbitrary-precision
-arithmetic chapter on "The Algorithm Design Manual" by S.Skiena, pag 423.
+arithmetic chapter on "The Algorithm Design Manual" - S. Skiena, pag 423.
 
 To do the arithmetic the ideal choice is to use as base the square root of the
 largest integer supported fully by hardware arithmetics. Larger bases allow to
 represent the same number with less digits, while avoiding overflow grants us
 the best efficiency over the used hardware.
 
-According to C++11 that type is: std::intmax_t
+Two basic types are defined:
+store_t to store a single digit,
+calc_t to perform arithmetics on two digits avoiding overflow
+
+typedef int32_t store_t;
+typedef int64_t calc_t;
+
+These typedefs should be adjusted to get the best performance from your hardware.
+If for example 64bit arithmetic is supported, it is better to use a 64bit type
+for calculations while storing digits in a 32bit type to avoid overflow
+when multiplying two of them.
+
