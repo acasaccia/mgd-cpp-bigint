@@ -11,13 +11,24 @@
 #pragma once
 
 #include <vector>
-#include <cstdint>
-#include "Digit.h"
+#include <string>
+#include "Types.h"
 
 class BigInt {
 public:
 	BigInt();
-	BigInt(int iInteger);
+	BigInt(const int iInteger);
+	//BigInt(const BigInt &iBigInteger);
+	BigInt(const std::string &iString);
+
+	//BigInt& operator=(const BigInt &iBigInteger);
+	//BigInt& operator+(const BigInt &iBigInteger);
+	//BigInt& operator+=(const BigInt &iBigInteger);
+	//BigInt& operator-(const BigInt &iBigInteger);
+	//BigInt& operator-=(const BigInt &iBigInteger);
+	//BigInt& operator*(const BigInt &iBigInteger);
+	//BigInt& operator*=(const BigInt &iBigInteger);
+
 private:
-	std::vector<digit_t> mRepresentation;
+	std::vector<store_t> mRepresentation;
 };
