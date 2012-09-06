@@ -15,10 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BigInt.cpp">
+    <ClCompile Include="BigIntTest.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="BigIntTest.cpp">
+    <ClCompile Include="UnsignedBigInt.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="BigInt.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,7 +29,7 @@
     <ClInclude Include="BigInt.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Types.h">
+    <ClInclude Include="UnsignedBigInt.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

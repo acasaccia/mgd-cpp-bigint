@@ -67,11 +67,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BigInt.cpp" />
+    <ClCompile Include="UnsignedBigInt.cpp" />
     <ClCompile Include="BigIntTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigInt.h" />
-    <ClInclude Include="Types.h" />
+    <ClInclude Include="UnsignedBigInt.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.txt" />
