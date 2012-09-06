@@ -73,7 +73,7 @@ public:
 
 #pragma endregion
 
-#pragma region Public methods and members
+#pragma region Public Methods and Members
 
 	void print(std::ostream& os) const;
 	std::string toString() const;
@@ -83,15 +83,11 @@ public:
 
 private:
 
-#pragma region Private methods and members
+#pragma region Private Methods and Members
 
 	std::vector<store_t> mDigits;
-
-#pragma endregion
-
-#pragma region Private Functions
-
 	static calc_t initializeBase();
+	const std::string UnsignedBigInt::trim(const std::string& ioString, const std::string& iWhitespace = "0");
 
 #pragma endregion
 

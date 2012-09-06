@@ -52,7 +52,7 @@ namespace {
 	TEST_F(UnsignedBigIntTest, Additions) {
 		UnsignedBigInt a, b, c;
 		a = UnsignedBigInt("47562497562947562947650245792");
-		b = UnsignedBigInt(   "24729560249562456409874450");
+		b = UnsignedBigInt("24729560249562456409874450");
 		c = a + b;
 		ASSERT_STREQ("47587227123197125404060120242",(c).toString().c_str());
 		a = UnsignedBigInt("78652846526572987549028759875928462846584276548276582476584726584725682745684276");
@@ -71,7 +71,7 @@ namespace {
 		a = UnsignedBigInt("1");
 		b = UnsignedBigInt("2");
 		c = a - b;
-		ASSERT_STREQ("999999999999999999",(c).toString().c_str());
+		ASSERT_STREQ("999999999",(c).toString().c_str());
 		a = UnsignedBigInt("8375639165791754013759651937651937651937659");
 		b = UnsignedBigInt("747214317243172437125");
 		c = a - b;
