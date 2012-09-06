@@ -16,7 +16,6 @@
 #pragma region Constructors
 
 UnsignedBigInt::UnsignedBigInt() {
-	initializeBase();
 	mDigits = std::vector<store_t> ();
 	mDigits.push_back(0);
 }
@@ -27,11 +26,10 @@ UnsignedBigInt::UnsignedBigInt(const int iInteger) {
 	if (iInteger < 0)
 		throw std::exception("Trying to initialize an Unsigned Big Integer with a negative value.");
 
-	// @todo: check if int fits into our UnsignedBigInt single digit
+	// @todo: check if int fits into our UnsignedBigInt single digit (e.g. iInteger < mBase - 1)
 	// we could check if it fits in a single digit, otherwise convert to string and use string constructor: GG
 	// additionally this could become a template method for all integers data types
 	//if ( iInteger < std::numeric_limits<store_t>::max() ) {
-		initializeBase();
 		mDigits = std::vector<store_t> ();
 		store_t digit = static_cast<store_t>(iInteger);
 		mDigits.push_back(digit);
@@ -41,11 +39,14 @@ UnsignedBigInt::UnsignedBigInt(const int iInteger) {
 }
 
 UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
-	initializeBase();
 
 	// @todo: do as int do or throw exceptions? Think about it.
 	if ( iString.find_first_not_of("0123456789") != std::string::npos )
 		throw std::exception("Trying to initialize an Unsigned Big Integer with an invalid string.");
+
+	// Strip leading zeros
+	std::string cleanString = iString;
+	cleanString = trim(cleanString);
 
 	mDigits = std::vector<store_t> ();
 	
@@ -54,8 +55,8 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
 	char digit_char;
 
-	for ( std::string::size_type i = 0; i != iString.size(); ++i ) {
-		digit_char = iString[i];
+	for ( std::string::size_type i = 0; i != cleanString.size(); ++i ) {
+		digit_char = cleanString[i];
 		carry = static_cast<calc_t>(atoi(&digit_char));
 
 		for ( std::vector<store_t>::size_type j = mDigits.size(); j --> 0 ;) {
@@ -88,7 +89,7 @@ UnsignedBigInt& UnsignedBigInt::operator+=(const UnsignedBigInt &iThat) {
 	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
 
 	// we will surely end up with a number of digits >= to the bigger addend
-	if (this_size < that_size) {
+	if ( this_size < that_size ) {
 		mDigits.resize( that_size, 0 );
 		this_size = that_size;
 	}
@@ -124,7 +125,7 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 	std::vector<store_t>::size_type this_size = mDigits.size();
 	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
 
-	if (this_size < that_size) {
+	if ( this_size < that_size ) {
 		mDigits.resize( that_size, 0 );
 		this_size = that_size;
 	}
@@ -144,28 +145,25 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 		mDigits[this_size - 1 - i] = static_cast<store_t>(difference);
 	}
 
-	if (borrow)
-		mDigits.insert(mDigits.begin(), mBase - 1);
+	// @todo: eventually trim zeros
 
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::operator*=(const UnsignedBigInt &iThat) {
 
-	// @todo: Implement me
+	UnsignedBigInt result = UnsignedBigInt();
+	store_t multiplier;
 
-	// Basic schoolhouse method (long multiplication)
-	UnsignedBigInt* result = new UnsignedBigInt();
-
-	std::vector<store_t>::size_type this_size = mDigits.size();
 	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
 
 	for ( std::vector<store_t>::size_type i = 0; i < that_size; i++ ) {
-		for ( std::vector<store_t>::size_type j = 0; i < this_size; i++ ) {
-			
-		}
+		multiplier = static_cast<store_t>(iThat.mDigits[that_size - 1 - i]);
+		// We implement this on top of the *= integer overload
+		result += (*this * multiplier) * i * mBase;
 	}
 
+	*this = result;
 	return *this;
 }
 
@@ -262,7 +260,7 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 
 #pragma endregion
 
-#pragma region Public Methods
+#pragma region Public Methods and Members
 
 void UnsignedBigInt::print(std::ostream& os) const {
 	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
@@ -283,6 +281,8 @@ std::string UnsignedBigInt::toString() const {
 
 #pragma region Private Methods and Members
 
+const calc_t UnsignedBigInt::mBase = UnsignedBigInt::initializeBase();
+
 calc_t UnsignedBigInt::initializeBase() {
 	// Get largest power of ten that fits store_t + 1.
 	calc_t max_base = static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
@@ -292,7 +292,17 @@ calc_t UnsignedBigInt::initializeBase() {
 	return base / 10;
 }
 
-const calc_t UnsignedBigInt::mBase = UnsignedBigInt::initializeBase();
+const std::string UnsignedBigInt::trim(const std::string& ioString, const std::string& iWhitespace)
+{
+    const size_t beginStr = ioString.find_first_not_of(iWhitespace);
+    if (beginStr == std::string::npos)
+    {
+        // no content
+        return "";
+    }
+
+    return ioString.substr(beginStr);
+}
 
 #pragma endregion
 
