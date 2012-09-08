@@ -22,20 +22,29 @@ UnsignedBigInt::UnsignedBigInt() {
 
 UnsignedBigInt::UnsignedBigInt(const int iInteger) {
 
-	// @todo: do as int do or throw exceptions? Think about it.
+	// It doesn't make sense (to me) to initialize an arbitrary length integer with
+	// a negative value, I can't just make it overflow like a fixed size one.
 	if (iInteger < 0)
-		throw std::exception("Trying to initialize an Unsigned Big Integer with a negative value.");
+		throw std::exception("Can't initialize an Unsigned Big Integer with a negative value.");
 
-	// @todo: check if int fits into our UnsignedBigInt single digit (e.g. iInteger < mBase - 1)
-	// we could check if it fits in a single digit, otherwise convert to string and use string constructor: GG
-	// additionally this could become a template method for all integers data types
-	//if ( iInteger < std::numeric_limits<store_t>::max() ) {
+	// @todo: if input fits a single digit we initialize trivially
+	// else we convert to string and use string constructor
+	if ( iInteger < mBase - 1 ) {
 		mDigits = std::vector<store_t> ();
 		store_t digit = static_cast<store_t>(iInteger);
 		mDigits.push_back(digit);
-	//} else {
-
-	//}
+	} else {
+		// @todo check this
+		std::string stringInteger;
+		int tmpi = iInteger;
+		char buf;
+		while (tmpi/=10 > 0) {
+			itoa(tmpi%10, &buf, 10);
+			stringInteger.insert(stringInteger.begin(), buf);
+		}
+		UnsignedBigInt tmp = UnsignedBigInt(stringInteger);
+		mDigits = tmp.mDigits;
+	}
 }
 
 UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
@@ -46,7 +55,7 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
 	// Strip leading zeros
 	std::string cleanString = iString;
-	cleanString = trim(cleanString);
+	cleanString = trimLeadingZeros(cleanString);
 
 	mDigits = std::vector<store_t> ();
 	
@@ -66,10 +75,8 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 			carry = static_cast<store_t>(sum / mBase);
 		}
 
-		if (carry) {
+		if (carry)
 			mDigits.insert(mDigits.begin(), carry);
-		}
-
 	}
 
 }
@@ -117,7 +124,7 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 
 	// Basic schoolhouse method
 
-	// @todo: Ok "do as int do" but does it make sense overflow for an arbitrary big integer subtraction?
+	// @todo: Ok: "do as int do" but does it make sense overflow for an arbitrary big integer subtraction?
 	// Don't think so. I think I'll just throw an exception
 	calc_t this_digit, that_digit, difference, borrow;
 	borrow = 0;
@@ -145,12 +152,29 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 		mDigits[this_size - 1 - i] = static_cast<store_t>(difference);
 	}
 
-	// @todo: eventually trim zeros
+	trimLeadingZeros();
 
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::operator*=(const UnsignedBigInt &iThat) {
+
+	UnsignedBigInt result = UnsignedBigInt();
+	store_t multiplier;
+
+	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
+
+	for ( std::vector<store_t>::size_type i = 0; i < that_size; i++ ) {
+		multiplier = static_cast<store_t>(iThat.mDigits[that_size - 1 - i]);
+		// We implement this on top of the *= integer overload
+		result += (*this * multiplier) * i * mBase;
+	}
+
+	*this = result;
+	return *this;
+}
+
+UnsignedBigInt& UnsignedBigInt::operator*=(const int &iInteger) {
 
 	UnsignedBigInt result = UnsignedBigInt();
 	store_t multiplier;
@@ -292,16 +316,20 @@ calc_t UnsignedBigInt::initializeBase() {
 	return base / 10;
 }
 
-const std::string UnsignedBigInt::trim(const std::string& ioString, const std::string& iWhitespace)
+const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString)
 {
-    const size_t beginStr = ioString.find_first_not_of(iWhitespace);
+    const size_t beginStr = ioString.find_first_not_of("0");
     if (beginStr == std::string::npos)
-    {
-        // no content
         return "";
-    }
-
     return ioString.substr(beginStr);
+}
+
+void UnsignedBigInt::trimLeadingZeros() {
+	std::vector<store_t>::iterator it = mDigits.begin();
+	while ( *it == 0 && mDigits.size() > 1 ) {
+		it = mDigits.erase(it);
+		it = mDigits.begin();
+	}
 }
 
 #pragma endregion

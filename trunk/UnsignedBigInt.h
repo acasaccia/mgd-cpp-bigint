@@ -87,7 +87,8 @@ private:
 
 	std::vector<store_t> mDigits;
 	static calc_t initializeBase();
-	const std::string UnsignedBigInt::trim(const std::string& ioString, const std::string& iWhitespace = "0");
+	const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString);
+	void UnsignedBigInt::trimLeadingZeros();
 
 #pragma endregion
 
