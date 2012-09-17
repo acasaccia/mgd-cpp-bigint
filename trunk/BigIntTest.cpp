@@ -53,6 +53,9 @@ namespace {
 		ASSERT_THROW(a = UnsignedBigInt("WAT?"), BadStringInitializationException);
 		ASSERT_THROW(a = UnsignedBigInt("-1"), BadStringInitializationException);
 
+		a = UnsignedBigInt("00000000");
+		ASSERT_STREQ("0",(a).toString().c_str());
+
 		a = UnsignedBigInt("47562497562947562947650245792");
 		ASSERT_STREQ("47562497562947562947650245792", a.toString().c_str());
 
@@ -198,6 +201,10 @@ namespace {
 
 		UnsignedBigInt a, b, c;
 
+		a = UnsignedBigInt("10002893652093475029347699500345000015858500009475000011111");
+		b = UnsignedBigInt("0000");
+		ASSERT_THROW(a / b, DivideByZeroException);
+
 		a = UnsignedBigInt("10000000000000000000000000000000000000000000000000000011111");
 		b = UnsignedBigInt("500000000000000000000000000000");
 		ASSERT_STREQ("20000000000000000000000000000", (a / b).toString().c_str());
@@ -210,8 +217,28 @@ namespace {
 		b = UnsignedBigInt("247295602495624564");
 		ASSERT_STREQ("192330543216", (a / b).toString().c_str());
 
+		a = UnsignedBigInt("236135716361436519856974811659278549273845691284519254912345");
+		b = UnsignedBigInt("983475693482652938765924387652938756");
+		ASSERT_STREQ("240103256162071692058670", (a / b).toString().c_str());
+
 	}
 
+	#pragma endregion
+
+	#pragma region Arithmetics summary
+
+	TEST_F(UnsignedBigIntTest, ArithmeticSummary) {
+
+		UnsignedBigInt a, b;
+
+		a = UnsignedBigInt("37865392874568327496520394757622039865203956870394562309874569238569238745693287659287345629387546928375693874569238745692387");
+		b = a + a;
+
+		ASSERT_STREQ((b / 2).toString().c_str(), (a).toString().c_str());
+		ASSERT_STREQ((b * b).toString().c_str(), (a * a * 4).toString().c_str());
+		ASSERT_STREQ((b * b - a).toString().c_str(), ((a * a * 4) - a).toString().c_str());
+
+	}
 	#pragma endregion
 
 	#pragma region Remainders
@@ -223,6 +250,14 @@ namespace {
 		a = UnsignedBigInt("10000000000000000000000000000000000000000000000000000011111");
 		b = UnsignedBigInt("500000000000000000000000000000");
 		ASSERT_STREQ("11111", (a % b).toString().c_str());
+
+		a = UnsignedBigInt("47562497562947562947650245792");
+		b = UnsignedBigInt("247295602495624564");
+		ASSERT_STREQ("36085290337087968", (a % b).toString().c_str());
+
+		a = UnsignedBigInt("236135716361436519856974811659278549273845691284519254912345");
+		b = UnsignedBigInt("983475693482652938765924387652938756");
+		ASSERT_STREQ("290962808750621283678503626186097825", (a % b).toString().c_str());
 
 	}	
 
@@ -257,6 +292,7 @@ namespace {
 	}
 
 	#pragma endregion
+
 
 
 	// The fixture for testing class BigInt.
