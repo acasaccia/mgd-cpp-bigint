@@ -9,9 +9,10 @@
  */
 
 #include "UnsignedBigInt.h"
-#include <exception>
 #include <iomanip>
 #include <sstream>
+
+const calc_t UnsignedBigInt::mBase = UnsignedBigInt::initializeBase();
 
 #pragma region Constructors
 
@@ -20,40 +21,20 @@ UnsignedBigInt::UnsignedBigInt() {
 	mDigits.push_back(0);
 }
 
-UnsignedBigInt::UnsignedBigInt(const int iInteger) {
-
-	// It doesn't make sense (to me) to initialize an arbitrary length integer with
-	// a negative value, I can't just make it overflow like a fixed size one.
-	if (iInteger < 0)
-		throw std::exception("Can't initialize an Unsigned Big Integer with a negative value.");
-
-	// @todo: if input fits a single digit we initialize trivially
-	// else we convert to string and use string constructor
-	if ( iInteger < mBase - 1 ) {
-		mDigits = std::vector<store_t> ();
-		store_t digit = static_cast<store_t>(iInteger);
-		mDigits.push_back(digit);
-	} else {
-		// @todo check this
-		std::string stringInteger;
-		int tmpi = iInteger;
-		char buf;
-		while (tmpi/=10 > 0) {
-			itoa(tmpi%10, &buf, 10);
-			stringInteger.insert(stringInteger.begin(), buf);
-		}
-		UnsignedBigInt tmp = UnsignedBigInt(stringInteger);
-		mDigits = tmp.mDigits;
-	}
-}
+UnsignedBigInt::UnsignedBigInt(const unsigned long long iInteger) { constructFromInteger(iInteger); }
+UnsignedBigInt::UnsignedBigInt(const unsigned long iInteger) { constructFromInteger(iInteger); }
+UnsignedBigInt::UnsignedBigInt(const unsigned int iInteger) { constructFromInteger(iInteger); }
+UnsignedBigInt::UnsignedBigInt(const unsigned short iInteger) { constructFromInteger(iInteger); }
+UnsignedBigInt::UnsignedBigInt(const long long iSignedInteger) { constructFromSignedInteger(iSignedInteger); }
+UnsignedBigInt::UnsignedBigInt(const long iSignedInteger) { constructFromSignedInteger(iSignedInteger); }
+UnsignedBigInt::UnsignedBigInt(const int iSignedInteger) { constructFromSignedInteger(iSignedInteger); }
+UnsignedBigInt::UnsignedBigInt(const short iSignedInteger) { constructFromSignedInteger(iSignedInteger); }
 
 UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
-	// @todo: do as int do or throw exceptions? Think about it.
 	if ( iString.find_first_not_of("0123456789") != std::string::npos )
-		throw std::exception("Trying to initialize an Unsigned Big Integer with an invalid string.");
+		throw BadStringInitializationException();
 
-	// Strip leading zeros
 	std::string cleanString = iString;
 	cleanString = trimLeadingZeros(cleanString);
 
@@ -68,7 +49,7 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 		digit_char = cleanString[i];
 		carry = static_cast<calc_t>(atoi(&digit_char));
 
-		for ( std::vector<store_t>::size_type j = mDigits.size(); j --> 0 ;) {
+		for ( digits_size_t j = mDigits.size(); j --> 0 ;) {
 			digit = static_cast<calc_t>(mDigits[j]);
 			sum = digit * 10 + carry;
 			mDigits[j] = static_cast<store_t>(sum % mBase);
@@ -88,20 +69,21 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 UnsignedBigInt& UnsignedBigInt::operator+=(const UnsignedBigInt &iThat) {
 
 	// Basic schoolhouse method
-
 	calc_t this_digit, that_digit, sum, carry;
 	carry = 0;
 
-	std::vector<store_t>::size_type this_size = mDigits.size();
-	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
+	digits_size_t this_size = mDigits.size();
+	digits_size_t that_size = iThat.mDigits.size();
 
 	// we will surely end up with a number of digits >= to the bigger addend
 	if ( this_size < that_size ) {
-		mDigits.resize( that_size, 0 );
+		while ( mDigits.size() < that_size ) {
+			mDigits.insert(mDigits.begin(), 0);
+		}
 		this_size = that_size;
 	}
 
-	for ( std::vector<store_t>::size_type i = 0; i < this_size; i++ ) {
+	for ( digits_size_t i = 0; i < this_size; i++ ) {
 		// promote both digits from store_t to calc_t
 		// if we got no more digits we set them to 0
 		this_digit = static_cast<calc_t>(mDigits[this_size - 1 - i]);
@@ -122,27 +104,27 @@ UnsignedBigInt& UnsignedBigInt::operator+=(const UnsignedBigInt &iThat) {
 
 UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 
-	// Basic schoolhouse method
+	// Check that this > that or throw an exception
+	if (*this < iThat)
+		throw InvalidSubtractionException();
 
-	// @todo: Ok: "do as int do" but does it make sense overflow for an arbitrary big integer subtraction?
-	// Don't think so. I think I'll just throw an exception
+	// Basic schoolhouse method
 	calc_t this_digit, that_digit, difference, borrow;
 	borrow = 0;
 
-	std::vector<store_t>::size_type this_size = mDigits.size();
-	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
+	digits_size_t this_size = mDigits.size();
+	digits_size_t that_size = iThat.mDigits.size();
 
 	if ( this_size < that_size ) {
 		mDigits.resize( that_size, 0 );
 		this_size = that_size;
 	}
 
-	for ( std::vector<store_t>::size_type i = 0; i < this_size; i++ ) {
+	for ( digits_size_t i = 0; i < this_size; i++ ) {
 		// promote both digits from store_t to calc_t
 		// if we got no more digits we set them to 0
 		this_digit = static_cast<calc_t>(mDigits[this_size - 1 - i]);
 		that_digit = (that_size - 1 - i) > that_size ? 0 : static_cast<calc_t>(iThat.mDigits[that_size - 1 - i]);
-		// a Lannister always pays his debt
 		this_digit -= borrow;
 		// check if we need borrow
 		borrow = static_cast<calc_t>(this_digit < that_digit);
@@ -151,49 +133,51 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 		// convert back to store_t and store result
 		mDigits[this_size - 1 - i] = static_cast<store_t>(difference);
 	}
-
 	trimLeadingZeros();
-
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::operator*=(const UnsignedBigInt &iThat) {
-
-	UnsignedBigInt result = UnsignedBigInt();
+	UnsignedBigInt partial, result = UnsignedBigInt();
 	store_t multiplier;
-
-	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
-
-	for ( std::vector<store_t>::size_type i = 0; i < that_size; i++ ) {
+	digits_size_t that_size = iThat.mDigits.size();
+	for ( digits_size_t i = 0; i < that_size; i++ ) {
 		multiplier = static_cast<store_t>(iThat.mDigits[that_size - 1 - i]);
-		// We implement this on top of the *= integer overload
-		result += (*this * multiplier) * i * mBase;
+		partial = this->multiplyByDigit(multiplier);
+		for (digits_size_t c = 0; c < i; c++) {
+			partial.mDigits.push_back(0); // shift left by i column
+		}
+		result += partial;
 	}
-
 	*this = result;
+	trimLeadingZeros();
 	return *this;
 }
 
-UnsignedBigInt& UnsignedBigInt::operator*=(const int &iInteger) {
-
-	UnsignedBigInt result = UnsignedBigInt();
-	store_t multiplier;
-
-	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
-
-	for ( std::vector<store_t>::size_type i = 0; i < that_size; i++ ) {
-		multiplier = static_cast<store_t>(iThat.mDigits[that_size - 1 - i]);
-		// We implement this on top of the *= integer overload
-		result += (*this * multiplier) * i * mBase;
+const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const {
+	UnsignedBigInt tmpUnsignedBigInt = UnsignedBigInt(*this);
+	digits_size_t size = tmpUnsignedBigInt.mDigits.size();
+	calc_t multiplier, current_digit, tmp, carry;
+	multiplier = multiplier = static_cast<calc_t>(iMultiplier);
+	carry = 0;
+	for ( digits_size_t i = 0; i < size; i++ ) {
+		// promote both to calc_t
+		current_digit = static_cast<calc_t>(tmpUnsignedBigInt.mDigits[size - 1 - i]);
+		tmp = current_digit * multiplier + carry;
+		carry = tmp / mBase;
+		tmpUnsignedBigInt.mDigits[size - 1 - i] = static_cast<store_t>(tmp % mBase);
 	}
-
-	*this = result;
-	return *this;
+	if (carry)
+		tmpUnsignedBigInt.mDigits.insert(tmpUnsignedBigInt.mDigits.begin(), carry);
+	return tmpUnsignedBigInt;
 }
 
 UnsignedBigInt& UnsignedBigInt::operator/=(const UnsignedBigInt &iThat) {
-	// @todo: Implement me
-	return *this;
+	return divide(iThat, QUOTIENT);
+}
+
+UnsignedBigInt& UnsignedBigInt::operator%=(const UnsignedBigInt &iThat) {
+	return divide(iThat, REMAINDER);
 }
 
 #pragma endregion
@@ -216,6 +200,11 @@ const UnsignedBigInt UnsignedBigInt::operator/(const UnsignedBigInt &iThat) cons
 	return UnsignedBigInt(*this) /= iThat;
 }
 
+const UnsignedBigInt UnsignedBigInt::operator%(const UnsignedBigInt &iThat) const {
+	return UnsignedBigInt(*this) %= iThat;
+}
+
+
 #pragma endregion
 
 #pragma region Comparison operators
@@ -223,7 +212,7 @@ const UnsignedBigInt UnsignedBigInt::operator/(const UnsignedBigInt &iThat) cons
 bool UnsignedBigInt::operator==(const UnsignedBigInt &iThat) const {
 	if ( mDigits.size() != iThat.mDigits.size() )
 		return false;
-	for (std::vector<store_t>::size_type i = 0; i < mDigits.size(); i++ ) {
+	for (digits_size_t i = 0; i < mDigits.size(); i++ ) {
 		if (mDigits[i] != iThat.mDigits[i])
 			return false;
 	}
@@ -235,11 +224,11 @@ bool UnsignedBigInt::operator!=(const UnsignedBigInt &iThat) const {
 }
 
 bool UnsignedBigInt::operator<(const UnsignedBigInt &iThat) const {
-	std::vector<store_t>::size_type this_size = mDigits.size();
-	std::vector<store_t>::size_type that_size = iThat.mDigits.size();
+	digits_size_t this_size = mDigits.size();
+	digits_size_t that_size = iThat.mDigits.size();
 	if ( this_size != that_size )
 		return this_size < that_size;
-	for (std::vector<store_t>::size_type i = 0; i < mDigits.size(); i++ ) {
+	for (digits_size_t i = 0; i < mDigits.size(); i++ ) {
 		if (mDigits[i] != iThat.mDigits[i])
 			return mDigits[i] < iThat.mDigits[i];
 	}
@@ -289,7 +278,7 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 void UnsignedBigInt::print(std::ostream& os) const {
 	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
 	os << mDigits.front(); // no padding for most significant digit, ty
-	for ( std::vector<store_t>::size_type i = 1; i < mDigits.size() ; i++) {
+	for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
 		os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits[i];
 	}
 }
@@ -303,17 +292,18 @@ std::string UnsignedBigInt::toString() const {
 
 #pragma endregion
 
-#pragma region Private Methods and Members
-
-const calc_t UnsignedBigInt::mBase = UnsignedBigInt::initializeBase();
+#pragma region Protected Methods and Members
 
 calc_t UnsignedBigInt::initializeBase() {
+	// Use as base the bigger value that can be stored in store_t
+	// return static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
 	// Get largest power of ten that fits store_t + 1.
 	calc_t max_base = static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
 	calc_t base = 1;
 	while (base < max_base)
 		base *= 10;
 	return base / 10;
+
 }
 
 const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString)
@@ -330,6 +320,89 @@ void UnsignedBigInt::trimLeadingZeros() {
 		it = mDigits.erase(it);
 		it = mDigits.begin();
 	}
+}
+
+UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iThat, divisionResult iMode) {
+	
+	UnsignedBigInt quotient, divisor, tmp;
+	calc_t tmp_q, tmp_r;
+
+	digits_size_t n = iThat.mDigits.size();
+
+	if (n == 1)
+		return divideByDigit(iThat.mDigits[0], iMode);
+
+	digits_size_t m = mDigits.size() - n;
+
+	// add a digit to dividend
+	mDigits.insert(mDigits.begin(), 0);
+
+	store_t d =  static_cast<store_t>(mBase - 1) /  static_cast<store_t>(iThat.mDigits[0]);
+
+	divisor = iThat * d;	// normalize divisor
+	*this *= d;				// multiply dividend accordingly
+
+	// number of loops is dividend digits - divisor digits
+	digits_size_t j = m;
+	
+	while ( j > 0 ) {
+
+		tmp_q = ( static_cast<calc_t>(mDigits[m-j]) * static_cast<calc_t>(mBase) + static_cast<calc_t>(mDigits[m-j+1]) ) / static_cast<calc_t>(divisor.mDigits[0]);
+		tmp_r = ( static_cast<calc_t>(mDigits[m-j]) * static_cast<calc_t>(mBase) + static_cast<calc_t>(mDigits[m-j+1]) ) % static_cast<calc_t>(divisor.mDigits[0]);
+
+		bool repeat_test = true;
+
+		while (repeat_test) {
+			if (tmp_q == mBase || tmp_q * divisor.mDigits[1] > mBase * tmp_r + mDigits[m-j+2]) {
+				tmp_q--;
+				tmp_r += divisor.mDigits[0];
+				if ( tmp_r < mBase )
+					repeat_test = true;
+				else
+					repeat_test = false;
+			} else {
+				repeat_test = false;
+			}
+		}
+
+		tmp = 0;
+
+		// pick n digits from j to j+n
+		for (digits_size_t i = m-j; i<=m-j+n; i++) {
+			if (tmp == 0)
+				tmp.mDigits[0] = mDigits[i];
+			else
+				tmp.mDigits.push_back(mDigits[i]);
+				
+		}
+
+		// compute divisor * digit quotient
+		tmp -= divisor * tmp_q;
+
+		// replace selected digit with computed value
+		while (tmp.mDigits.size()<=n)
+			tmp.mDigits.insert(tmp.mDigits.begin(),0);
+
+		for (digits_size_t i=0; i<=n; i++) {
+			mDigits[m-j+i] = tmp.mDigits[i];
+		}
+
+		if (quotient == 0)
+			quotient.mDigits[0] = tmp_q;
+		else
+			quotient.mDigits.push_back(tmp_q);
+
+		j--;
+
+	}
+	
+	iMode == QUOTIENT ? *this = quotient : *this /= d;
+
+	return *this;
+}
+
+UnsignedBigInt& UnsignedBigInt::divideByDigit(const store_t &iDivisor, divisionResult iMode) {
+	return *this;
 }
 
 #pragma endregion
@@ -353,5 +426,11 @@ std::istream& operator>>( std::istream& is, UnsignedBigInt& iUnsignedBigInt ) {
 	}
 	return is;
 }
+
+#pragma endregion
+
+#pragma region Other functions
+
+UnsignedBigInt pow(const UnsignedBigInt& iBase, const int iExponent);
 
 #pragma endregion
