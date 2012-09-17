@@ -420,7 +420,7 @@ std::istream& operator>>( std::istream& is, UnsignedBigInt& iUnsignedBigInt ) {
 	is >> tmp;
 	try {
 		iUnsignedBigInt = UnsignedBigInt(tmp);
-	} catch (std::exception e) {
+	} catch (BadStringInitializationException e) {
 		// no valid object of T found in stream
 		is.setstate(std::ios::failbit);
 	}
