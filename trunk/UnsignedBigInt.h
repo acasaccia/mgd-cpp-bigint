@@ -14,46 +14,51 @@
 #include <string>
 #include <iostream>
 #include <cstdint>
-
-// The following typedefs should be adjusted to get the best performance from your hardware.
-// If for example 64bit arithmetic is supported, it is better to use a 64bit type
-// for calculations and store digits in a 32bit type to avoid overflow  when multiplying two of them.
-// Using unsigned types gives the advantage of non having to worry masking the high bit at any time.
-// \see http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-supported-fully-by-hardware-arithmetics
-
-typedef uint32_t store_t;	// type to store a digit
-typedef uint64_t calc_t;	// type to perform calculation on two digits without hardware overlflow
+#include "Types.h"
+#include "Exceptions.h"
 
 class UnsignedBigInt {
 public:
 
-#pragma region Constructors
+	const static calc_t mBase;
+	std::vector<store_t> mDigits;
+
+	#pragma region Constructors
 
 	UnsignedBigInt();
-	UnsignedBigInt(const int iInteger);
+	UnsignedBigInt(const unsigned long long iInteger);
+	UnsignedBigInt(const unsigned long iInteger);
+	UnsignedBigInt(const unsigned int iInteger);
+	UnsignedBigInt(const unsigned short iInteger);
+	UnsignedBigInt(const long long iSignedInteger);
+	UnsignedBigInt(const long iSignedInteger);
+	UnsignedBigInt(const int iSignedInteger);
+	UnsignedBigInt(const short iSignedInteger);
 	UnsignedBigInt(const std::string &iString);
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Compound assignment operators
+	#pragma region Compound assignment operators
 
 	UnsignedBigInt& operator+=(const UnsignedBigInt &iThat);
-	UnsignedBigInt& operator-=(const UnsignedBigInt &iUnsignedBigInteger);
-	UnsignedBigInt& operator*=(const UnsignedBigInt &iUnsignedBigInteger);
-	UnsignedBigInt& operator/=(const UnsignedBigInt &iUnsignedBigInteger);
+	UnsignedBigInt& operator-=(const UnsignedBigInt &iThat);
+	UnsignedBigInt& operator*=(const UnsignedBigInt &iThat);
+	UnsignedBigInt& operator/=(const UnsignedBigInt &iThat);
+	UnsignedBigInt& operator%=(const UnsignedBigInt &iThat);
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Binary arithmetic operators
+	#pragma region Binary arithmetic operators
 
 	const UnsignedBigInt operator+(const UnsignedBigInt &iThat) const;
 	const UnsignedBigInt operator-(const UnsignedBigInt &iThat) const;
 	const UnsignedBigInt operator*(const UnsignedBigInt &iThat) const;
 	const UnsignedBigInt operator/(const UnsignedBigInt &iThat) const;
+	const UnsignedBigInt operator%(const UnsignedBigInt &iThat) const;
 	
-#pragma endregion
+	#pragma endregion
 
-#pragma region Comparison operators
+	#pragma region Comparison operators
 
 	bool operator==(const UnsignedBigInt &iThat) const;
 	bool operator!=(const UnsignedBigInt &iThat) const;
@@ -62,37 +67,65 @@ public:
 	bool operator<=(const UnsignedBigInt &iThat) const;
 	bool operator>=(const UnsignedBigInt &iThat) const;
 	
-#pragma endregion
+	#pragma endregion
 
-#pragma region Increment/Decrement operators
+	#pragma region Increment/Decrement operators
 
 	UnsignedBigInt& operator++();
 	UnsignedBigInt& operator--();
 	UnsignedBigInt operator++(int);
 	UnsignedBigInt operator--(int);
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Public Methods and Members
+	#pragma region Other Public Methods
 
 	void print(std::ostream& os) const;
 	std::string toString() const;
-	static const calc_t mBase;
 
-#pragma endregion
+	#pragma endregion
 
-private:
+protected:
 
-#pragma region Private Methods and Members
+	#pragma region Protected Methods and Members
 
-	std::vector<store_t> mDigits;
 	static calc_t initializeBase();
+	UnsignedBigInt& divide(const UnsignedBigInt &iThat, divisionResult iMode);
+	UnsignedBigInt& divideByDigit(const store_t &iDivisor, divisionResult iMode);
+	const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const;
 	const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString);
 	void UnsignedBigInt::trimLeadingZeros();
 
-#pragma endregion
+	// Initialization logic is the same for all integer types
+	template <class T>
+	void constructFromInteger(const T iInteger) {
+		// If input fits a single digit we initialize it
+		if ( iInteger < mBase - 1 ) {
+			mDigits = std::vector<store_t> ();
+			store_t digit = static_cast<store_t>(iInteger);
+			mDigits.push_back(digit);
+		} else {
+			// else we convert to string and use string constructor
+			// static_cast<unsigned long long>() is needed until VS11 will fully implement the new standard
+			UnsignedBigInt tmp = UnsignedBigInt( std::to_string( static_cast<unsigned long long>(iInteger) ) );
+			mDigits = tmp.mDigits;
+		}
+	}
+
+	template <class T>
+	void constructFromSignedInteger(const T iSignedInteger) {
+		if (iSignedInteger < 0)
+			throw BadIntegerInitializationException();
+		else
+			constructFromInteger(iSignedInteger);
+	}
+
+	#pragma endregion
 
 };
+
+UnsignedBigInt pow(const UnsignedBigInt& iBase, const int iExponent);
+UnsignedBigInt pow(const UnsignedBigInt& iBase, const UnsignedBigInt& iExponent);
 
 std::ostream& operator<<( std::ostream& os, const UnsignedBigInt& iUnsignedBigInt );
 std::istream& operator>>( std::istream& is, UnsignedBigInt& iUnsignedBigInt );

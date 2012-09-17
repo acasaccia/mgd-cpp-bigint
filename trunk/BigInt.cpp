@@ -29,7 +29,15 @@ BigInt::BigInt(const std::string &iString) {
 #pragma region Compound assignment operators
 
 BigInt& BigInt::operator+=(const BigInt &iThat) {
-	// @todo: Implement me
+	if (mNegative == iThat.mNegative) {
+		mMagnitude += iThat.mMagnitude;
+	} else {
+		if (mMagnitude <= iThat.mMagnitude) {
+			mNegative != mNegative;
+		}
+
+		mMagnitude -= iThat.mMagnitude;
+	}
 	return *this;
 }
 

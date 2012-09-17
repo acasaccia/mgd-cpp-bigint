@@ -32,6 +32,12 @@
     <ClInclude Include="UnsignedBigInt.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="Exceptions.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.txt">
