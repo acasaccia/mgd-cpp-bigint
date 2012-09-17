@@ -202,6 +202,10 @@ namespace {
 		b = UnsignedBigInt("500000000000000000000000000000");
 		ASSERT_STREQ("20000000000000000000000000000", (a / b).toString().c_str());
 
+		a = UnsignedBigInt("220000000000222");
+		b = UnsignedBigInt("2");
+		ASSERT_STREQ("110000000000111", (a / b).toString().c_str());
+
 		a = UnsignedBigInt("47562497562947562947650245792");
 		b = UnsignedBigInt("247295602495624564");
 		ASSERT_STREQ("192330543216", (a / b).toString().c_str());

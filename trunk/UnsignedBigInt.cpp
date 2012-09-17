@@ -327,57 +327,52 @@ UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, divisionR
 	if (iDivisor == 0)
 		throw DivideByZeroException();
 
-	UnsignedBigInt buffer, subdividend, subremainder, quotient;
-	digits_size_t n, j, dividend_size;
+	UnsignedBigInt subdividend, subremainder, quotient, product;
+	digits_size_t n, dividend_size, bin_search_max, bin_search_min;
+	store_t j;
 	bool first_round = true;
 
+	n = 1;
+		
+	dividend_size = mDigits.size();
+	subdividend = 0;
+
+	// pick first n digits of dividend until candidate > divisor
 	do {
-		
-		if (!first_round) {
-			while (subremainder.mDigits.size() > 0) {
-				mDigits.insert(mDigits.begin(), subremainder.mDigits.back());
-				subremainder.mDigits.pop_back();
-			}
-		}
+		subdividend.mDigits = std::vector<store_t>(mDigits.begin(), mDigits.begin()+n);
+		n++;
+	} while (subdividend < iDivisor && n <= dividend_size);
 
-		n = 1;
+	// remove the picked digits from dividend
+	mDigits = std::vector<store_t>(mDigits.begin() + (n-1), mDigits.end());
 		
-		dividend_size = mDigits.size();
-		subdividend = 0;
+	j = 0;
+	// find out how many times divisor fits into subdividend
+	do {
+		product = iDivisor * j;
+		j++;
+	} while (product <= subdividend);
 
-		// pick first n digits of dividend until candidate > divisor
-		do {
-			subdividend.mDigits = std::vector<store_t>(mDigits.begin(), mDigits.begin()+n);
-			n++;
-		} while (subdividend < iDivisor && n <= dividend_size);
+	subremainder = subdividend - iDivisor * static_cast<store_t>(j-2);
 
-		mDigits = std::vector<store_t>(mDigits.begin() + (n-1), mDigits.end());
- 
-		UnsignedBigInt product;
-		
+	quotient.mDigits.push_back(j-2);
+
+	while ( mDigits.size() > 0 ) {
+		subdividend = subremainder * mBase + mDigits.front();
+		mDigits.erase(mDigits.begin());
+
 		j = 0;
-		// see how many times divisor fits into candidate
+		// find out how many times divisor fits into subdividend
 		do {
 			product = iDivisor * j;
 			j++;
 		} while (product <= subdividend);
 
-		buffer = iDivisor * static_cast<store_t>(j-2);
-		subremainder = subdividend - buffer;
-
-		if (!first_round) {
-			while ( n > 2 ) {
-				quotient.mDigits.push_back(0);
-				n--;
-			}
-		}
+		subremainder = subdividend - iDivisor * static_cast<store_t>(j-2);
 
 		quotient.mDigits.push_back(j-2);
+	}
 
-		first_round = false;
-
-	} while (mDigits.size()>0);
-	
 	iMode == QUOTIENT ? mDigits = quotient.mDigits : mDigits = subremainder.mDigits;
 	
 	trimLeadingZeros();
