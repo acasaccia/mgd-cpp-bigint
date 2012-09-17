@@ -322,81 +322,65 @@ void UnsignedBigInt::trimLeadingZeros() {
 	}
 }
 
-UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iThat, divisionResult iMode) {
+UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, divisionResult iMode) {
 	
-	UnsignedBigInt quotient, divisor, tmp;
-	calc_t tmp_q, tmp_r;
+	if (iDivisor == 0)
+		throw DivideByZeroException();
 
-	digits_size_t n = iThat.mDigits.size();
+	UnsignedBigInt buffer, subdividend, subremainder, quotient;
+	digits_size_t n, j, dividend_size;
+	bool first_round = true;
 
-	if (n == 1)
-		return divideByDigit(iThat.mDigits[0], iMode);
-
-	digits_size_t m = mDigits.size() - n;
-
-	// add a digit to dividend
-	mDigits.insert(mDigits.begin(), 0);
-
-	store_t d =  static_cast<store_t>(mBase - 1) /  static_cast<store_t>(iThat.mDigits[0]);
-
-	divisor = iThat * d;	// normalize divisor
-	*this *= d;				// multiply dividend accordingly
-
-	// number of loops is dividend digits - divisor digits
-	digits_size_t j = m;
-	
-	while ( j > 0 ) {
-
-		tmp_q = ( static_cast<calc_t>(mDigits[m-j]) * static_cast<calc_t>(mBase) + static_cast<calc_t>(mDigits[m-j+1]) ) / static_cast<calc_t>(divisor.mDigits[0]);
-		tmp_r = ( static_cast<calc_t>(mDigits[m-j]) * static_cast<calc_t>(mBase) + static_cast<calc_t>(mDigits[m-j+1]) ) % static_cast<calc_t>(divisor.mDigits[0]);
-
-		bool repeat_test = true;
-
-		while (repeat_test) {
-			if (tmp_q == mBase || tmp_q * divisor.mDigits[1] > mBase * tmp_r + mDigits[m-j+2]) {
-				tmp_q--;
-				tmp_r += divisor.mDigits[0];
-				if ( tmp_r < mBase )
-					repeat_test = true;
-				else
-					repeat_test = false;
-			} else {
-				repeat_test = false;
+	do {
+		
+		if (!first_round) {
+			while (subremainder.mDigits.size() > 0) {
+				mDigits.insert(mDigits.begin(), subremainder.mDigits.back());
+				subremainder.mDigits.pop_back();
 			}
 		}
 
-		tmp = 0;
+		n = 1;
+		
+		dividend_size = mDigits.size();
+		subdividend = 0;
 
-		// pick n digits from j to j+n
-		for (digits_size_t i = m-j; i<=m-j+n; i++) {
-			if (tmp == 0)
-				tmp.mDigits[0] = mDigits[i];
-			else
-				tmp.mDigits.push_back(mDigits[i]);
-				
+		// pick first n digits of dividend until candidate > divisor
+		do {
+			subdividend.mDigits = std::vector<store_t>(mDigits.begin(), mDigits.begin()+n);
+			n++;
+		} while (subdividend < iDivisor && n <= dividend_size);
+
+		mDigits = std::vector<store_t>(mDigits.begin() + (n-1), mDigits.end());
+ 
+		UnsignedBigInt product;
+		
+		j = 0;
+		// see how many times divisor fits into candidate
+		do {
+			product = iDivisor * j;
+			j++;
+		} while (product <= subdividend);
+
+		buffer = iDivisor * static_cast<store_t>(j-2);
+		subremainder = subdividend - buffer;
+
+		if (!first_round) {
+			while ( n > 2 ) {
+				quotient.mDigits.push_back(0);
+				n--;
+			}
 		}
 
-		// compute divisor * digit quotient
-		tmp -= divisor * tmp_q;
+		quotient.mDigits.push_back(j-2);
 
-		// replace selected digit with computed value
-		while (tmp.mDigits.size()<=n)
-			tmp.mDigits.insert(tmp.mDigits.begin(),0);
+		first_round = false;
 
-		for (digits_size_t i=0; i<=n; i++) {
-			mDigits[m-j+i] = tmp.mDigits[i];
-		}
-
-		if (quotient == 0)
-			quotient.mDigits[0] = tmp_q;
-		else
-			quotient.mDigits.push_back(tmp_q);
-
-		j--;
-
-	}
+	} while (mDigits.size()>0);
 	
-	iMode == QUOTIENT ? *this = quotient : *this /= d;
+	iMode == QUOTIENT ? mDigits = quotient.mDigits : mDigits = subremainder.mDigits;
+	
+	trimLeadingZeros();
 
 	return *this;
 }

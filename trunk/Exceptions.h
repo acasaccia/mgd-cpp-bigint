@@ -20,3 +20,9 @@ class InvalidSubtractionException : std::exception {
 		return "Tried to perform subtraction on two UnsignedBigInt which would have caused a negative value.";
 	}
 };
+
+class DivideByZeroException : std::exception {
+	const char* what() const {
+		return "Tried to perform division by zero.";
+	}
+};
