@@ -1,28 +1,29 @@
+/*! 
+ *  Exceptions thrown by BigInt operations
+ *  -
+ *  BigInt Homework - Advanced cpp programming
+ *  Master in Computer Game Development, Verona, Italy
+ *  -
+ *  \author Andrea Casaccia
+ *  \date 5 August 2012
+ */
 
 #pragma once
 
 #include <exception>
 
-class BadIntegerInitializationException : std::exception {
-	const char* what() const {
-		return "Can't initialize from negative integer.";
-	}
+class BadStringInitializationException : public std::exception {
+	const char* what() const { return "Invalid characters found in initialization string.";	}
 };
 
-class BadStringInitializationException : std::exception {
-	const char* what() const {
-		return "Can't initialize from string. Allowed characters: [0-9].";
-	}
+class BadIntegerInitializationException : public std::exception {
+	const char* what() const { return "Tried to initialize an UnsignedBigInt with a negative value."; }
 };
 
-class InvalidSubtractionException : std::exception {
-	const char* what() const {
-		return "Tried to perform subtraction on two UnsignedBigInt which would have caused a negative value.";
-	}
+class InvalidSubtractionException : public std::exception {
+	const char* what() const { return "Tried to perform an UnsignedBigInt subtraction which would result in a negative value."; }
 };
 
-class DivideByZeroException : std::exception {
-	const char* what() const {
-		return "Tried to perform division by zero.";
-	}
+class DivideByZeroException : public std::exception {
+	const char* what() const { return "Tried to perform division by zero.";	}
 };

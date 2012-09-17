@@ -91,10 +91,10 @@ protected:
 
 	static calc_t initializeBase();
 	UnsignedBigInt& divide(const UnsignedBigInt &iThat, divisionResult iMode);
-	UnsignedBigInt& divideByDigit(const store_t &iDivisor, divisionResult iMode);
 	const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const;
 	const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString);
 	void UnsignedBigInt::trimLeadingZeros();
+	store_t UnsignedBigInt::getMultiplier(const UnsignedBigInt& iDivisor, const UnsignedBigInt& iDividend);
 
 	// Initialization logic is the same for all integer types
 	template <class T>

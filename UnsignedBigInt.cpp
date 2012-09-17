@@ -38,8 +38,13 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 	std::string cleanString = iString;
 	cleanString = trimLeadingZeros(cleanString);
 
-	mDigits = std::vector<store_t> ();
-	
+	mDigits = std::vector<store_t>();
+
+	if ( std::strcmp(cleanString.c_str(), "0") == 0 ) {
+		mDigits.push_back(0);
+		return;
+	}
+
 	store_t carry;
 	calc_t sum, digit;
 
@@ -310,7 +315,7 @@ const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString)
 {
     const size_t beginStr = ioString.find_first_not_of("0");
     if (beginStr == std::string::npos)
-        return "";
+		return "0";
     return ioString.substr(beginStr);
 }
 
@@ -328,8 +333,8 @@ UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, divisionR
 		throw DivideByZeroException();
 
 	UnsignedBigInt subdividend, subremainder, quotient, product;
-	digits_size_t n, dividend_size, bin_search_max, bin_search_min;
-	store_t j;
+	digits_size_t n, dividend_size;
+	store_t multiplier;
 	bool first_round = true;
 
 	n = 1;
@@ -346,31 +351,17 @@ UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, divisionR
 	// remove the picked digits from dividend
 	mDigits = std::vector<store_t>(mDigits.begin() + (n-1), mDigits.end());
 		
-	j = 0;
 	// find out how many times divisor fits into subdividend
-	do {
-		product = iDivisor * j;
-		j++;
-	} while (product <= subdividend);
-
-	subremainder = subdividend - iDivisor * static_cast<store_t>(j-2);
-
-	quotient.mDigits.push_back(j-2);
+	multiplier = getMultiplier(iDivisor, subdividend);
+	subremainder = subdividend - iDivisor * static_cast<store_t>(multiplier);
+	quotient.mDigits.push_back(multiplier);
 
 	while ( mDigits.size() > 0 ) {
 		subdividend = subremainder * mBase + mDigits.front();
 		mDigits.erase(mDigits.begin());
-
-		j = 0;
-		// find out how many times divisor fits into subdividend
-		do {
-			product = iDivisor * j;
-			j++;
-		} while (product <= subdividend);
-
-		subremainder = subdividend - iDivisor * static_cast<store_t>(j-2);
-
-		quotient.mDigits.push_back(j-2);
+		multiplier = getMultiplier(iDivisor, subdividend);
+		subremainder = subdividend - iDivisor * static_cast<store_t>(multiplier);
+		quotient.mDigits.push_back(multiplier);
 	}
 
 	iMode == QUOTIENT ? mDigits = quotient.mDigits : mDigits = subremainder.mDigits;
@@ -380,8 +371,29 @@ UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, divisionR
 	return *this;
 }
 
-UnsignedBigInt& UnsignedBigInt::divideByDigit(const store_t &iDivisor, divisionResult iMode) {
-	return *this;
+store_t UnsignedBigInt::getMultiplier(const UnsignedBigInt& iDivisor, const UnsignedBigInt& iDividend) {
+
+	store_t min = 0;
+	store_t max = std::numeric_limits<store_t>::max();
+	store_t j;
+
+	while (max - min > 1 ) {
+		j = static_cast<store_t>( ( static_cast<calc_t>(max) + static_cast<calc_t>(min) ) / 2 );
+		if (iDivisor * j == iDividend) {
+			return j;
+		}
+		if (iDivisor * j < iDividend) {
+			min = j;
+		}
+		if (iDivisor * j > iDividend) {
+			max = j;
+		}
+	}
+
+	j = max;
+	if (iDivisor * j > iDividend)
+		j--;
+	return j;
 }
 
 #pragma endregion
