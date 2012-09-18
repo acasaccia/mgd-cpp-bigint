@@ -19,9 +19,9 @@
 
 namespace {
 
-	// The fixture for testing class UnsignedBigInt.
 	class UnsignedBigIntTest : public ::testing::Test {};
 
+	// UnsignedBigInt
 	// The operations on huge integers in this tests have been copy/pasted from a Sage worksheet http://www.sagemath.org/
 
 	#pragma region Integer constructors
@@ -246,22 +246,6 @@ namespace {
 
 	#pragma endregion
 
-	#pragma region Arithmetics summary
-
-	TEST_F(UnsignedBigIntTest, ArithmeticSummary) {
-
-		UnsignedBigInt a, b;
-
-		a = UnsignedBigInt("37865392874568327496520394757622039865203956870394562309874569238569238745693287659287345629387546928375693874569238745692387");
-		b = a + a;
-
-		ASSERT_STREQ((b / 2).toString().c_str(), (a).toString().c_str());
-		ASSERT_STREQ((b * b).toString().c_str(), (a * a * 4).toString().c_str());
-		ASSERT_STREQ((b * b - a).toString().c_str(), ((a * a * 4) - a).toString().c_str());
-
-	}
-	#pragma endregion
-
 	#pragma region Remainders
 
 	TEST_F(UnsignedBigIntTest, Remainder) {
@@ -315,10 +299,32 @@ namespace {
 		b = UnsignedBigInt("1840");
 		c= pow(a,b); // lol 36,5Kb. We do what we must because we can.
 
-		std::ifstream t("214124124431412132545^1840.txt");
+		std::ifstream t("..\\214124124431412132545^1840.txt");
 		std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
+		ASSERT_TRUE(str.size()>0);
+
 		ASSERT_EQ(std::strcmp(str.c_str(),(c).toString().c_str()), 0);
+
+	}
+
+	#pragma endregion
+
+	#pragma region Summary
+
+	TEST_F(UnsignedBigIntTest, ArithmeticSummary) {
+
+		UnsignedBigInt a, b;
+
+		a = UnsignedBigInt("378653928745683274965203947576220398652039568703945623098745692385"
+						   "692387456932876592873456293875469283756938745692387456923874525252");
+		b = a + a;
+		ASSERT_STREQ((b / 2).toString().c_str(), (a).toString().c_str());
+		ASSERT_STREQ((b * b).toString().c_str(), (a * a * 4).toString().c_str());
+		ASSERT_STREQ((b * b - a).toString().c_str(), ((a * a * 4) - a).toString().c_str());
+
+		b = a * a * a;
+		ASSERT_STREQ(pow(a,3).toString().c_str(), (b).toString().c_str());
 
 	}
 
@@ -341,8 +347,10 @@ namespace {
 
 	#pragma endregion
 
-	// The fixture for testing class BigInt.
+	
 	class BigIntTest : public ::testing::Test {};
+
+	// BigInt
 
 	TEST_F(BigIntTest, Nothing) {
 	}
