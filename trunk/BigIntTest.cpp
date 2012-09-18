@@ -14,6 +14,8 @@
 #include <sstream>
 #include <string>
 #include <limits>
+#include <fstream>
+#include <streambuf>
 
 namespace {
 
@@ -285,12 +287,39 @@ namespace {
 	#pragma region Increment / Decrement
 
 	TEST_F(UnsignedBigIntTest, IncrementDecrement) {
+
 		UnsignedBigInt a = UnsignedBigInt("8375639165791754013759651937651937651937659");
 		ASSERT_STREQ("8375639165791754013759651937651937651937660", (++a).toString().c_str());
 		a--;
 		ASSERT_STREQ("8375639165791754013759651937651937651937659", a.toString().c_str());
 		ASSERT_STREQ("8375639165791754013759651937651937651937659", (a++).toString().c_str());
 		ASSERT_STREQ("8375639165791754013759651937651937651937660", a.toString().c_str());
+
+	}
+
+	#pragma endregion
+
+	#pragma region Exponentation
+
+	TEST_F(UnsignedBigIntTest, Exponentation) {
+
+		UnsignedBigInt a, b, c;
+
+		a = UnsignedBigInt("214518345");
+		b = UnsignedBigInt("4");
+		c = pow(a,b);
+
+		ASSERT_STREQ("2117667399768367790914905597950625", (c).toString().c_str());
+
+		a = UnsignedBigInt("214124124431412132545");
+		b = UnsignedBigInt("1840");
+		c= pow(a,b); // lol 36,5Kb. We do what we must because we can.
+
+		std::ifstream t("214124124431412132545^1840.txt");
+		std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+
+		ASSERT_EQ(std::strcmp(str.c_str(),(c).toString().c_str()), 0);
+
 	}
 
 	#pragma endregion
@@ -311,8 +340,6 @@ namespace {
 	}
 
 	#pragma endregion
-
-
 
 	// The fixture for testing class BigInt.
 	class BigIntTest : public ::testing::Test {};
