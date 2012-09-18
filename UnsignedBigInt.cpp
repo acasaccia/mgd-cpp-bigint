@@ -278,7 +278,7 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 
 #pragma endregion
 
-#pragma region Public Methods and Members
+#pragma region Public Methods
 
 void UnsignedBigInt::print(std::ostream& os) const {
 	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
@@ -295,13 +295,28 @@ std::string UnsignedBigInt::toString() const {
 	return returnString = ss.str();
 }
 
+std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit) {
+	std::vector<bool> ret;
+	while(iDigit) {
+		if (iDigit&1)
+			ret.push_back(1);
+		else
+			ret.push_back(0);
+		iDigit>>=1;  
+	}
+	reverse(ret.begin(),ret.end());
+	return ret;
+}
+
 #pragma endregion
 
-#pragma region Protected Methods and Members
+#pragma region Protected Methods
 
 calc_t UnsignedBigInt::initializeBase() {
 	// Use as base the bigger value that can be stored in store_t
 	// return static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
+
+	// This is much easier for human readability: see readme file for details.
 	// Get largest power of ten that fits store_t + 1.
 	calc_t max_base = static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
 	calc_t base = 1;
@@ -418,10 +433,18 @@ std::istream& operator>>( std::istream& is, UnsignedBigInt& iUnsignedBigInt ) {
 	return is;
 }
 
-#pragma endregion
-
-#pragma region Other functions
-
-UnsignedBigInt pow(const UnsignedBigInt& iBase, const int iExponent);
+UnsignedBigInt pow(const UnsignedBigInt& iBase, const UnsignedBigInt& iExponent) {
+	UnsignedBigInt result = 1;
+	std::vector<bool> binaryDigit;
+	for (digits_size_t i=0; i<iExponent.mDigits.size(); i++) {
+		binaryDigit = UnsignedBigInt::digitToBinary(iExponent.mDigits[i]);
+		for (short j=0; j<binaryDigit.size(); j++) {
+			result *= result;
+			if (binaryDigit[j])
+				result *= iBase;
+		}
+	}
+	return result;
+}
 
 #pragma endregion

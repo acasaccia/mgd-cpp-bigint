@@ -78,10 +78,11 @@ public:
 
 	#pragma endregion
 
-	#pragma region Other Public Methods
+	#pragma region Public Methods
 
 	void print(std::ostream& os) const;
 	std::string toString() const;
+	static std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit);
 
 	#pragma endregion
 
@@ -124,7 +125,6 @@ protected:
 
 };
 
-UnsignedBigInt pow(const UnsignedBigInt& iBase, const int iExponent);
 UnsignedBigInt pow(const UnsignedBigInt& iBase, const UnsignedBigInt& iExponent);
 
 std::ostream& operator<<( std::ostream& os, const UnsignedBigInt& iUnsignedBigInt );
