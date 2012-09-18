@@ -35,8 +35,16 @@ to get a human readable representation.
 
 I found an interesting compromise between SPEED - SPACE - REPRESENTATION is using
 as the base for big integer representation the largest power of ten that fits into
-the chosen store type. It saves a lot of space compared to decimal representation
-and saves us having to bother for conversions. Debug is also a lot easier.
+the chosen store type. It saves a lot of space and gives a huge performance boost
+compared to decimal representation and saves us having to bother for conversions.
+Debugging is also a lot easier.
+
+The tradeoff is on bitwise/shift operators: they have worse performance and slightly
+more complex implementation. Also, I have some doubts about the usefulness of using
+bitwisely a BigInt class with non-contiguous bit internal representation. Does it
+make sense implementing bitwise `not` for such a class?
+
+[*] "The Algorithm Design Manual" Skiena S. pag. 423
 
 ===============================================================================
 
@@ -45,15 +53,24 @@ UNSIGNED ARBITRARY INTEGER ARITHMETICS
 All binary operators have been implemented in terms of their compound operators,
 so look at those to see the actual code.
 Additions, subtractions and multiplications have been implemented with the basic
-schoolhouse method: they are well known and perform reasonably well.
+schoolhouse method: they are well known and perform reasonably well. [**]
 
 For division the only trick I had to implement was a binary search when looking
-at how many times divisor fits into dividend, linear one with large cipher was
-incredibly slow.
+for how many times divisor fits into dividend. I initially implemented it with a
+linear search but it was incredibly slow.
+
+For exponentation I used a basic exponentation by squaring method:
+http://en.wikipedia.org/wiki/Exponentiation_by_squaring
+
+[**] "The Art of Computer Programming", Knuth D. E. pag. 265
 
 ===============================================================================
 
 SIGNED ARBITRARY BIG INTEGERS
 
-Having UnsignedBigInt up and running I implemented unary sign operator on a 
-wrapper class, transposing the actual arithmetics to UnsignedBigInt as necessary.
+Having UnsignedBigInt up and running I managed to create a BigInt class,
+representing an UnsignedBigInt with a sign. I then managed to turn over
+UnsignedBigInt all the arithmetics making the necessary sign juggling to perform
+valid unsigned arithmetics.
+
+===============================================================================

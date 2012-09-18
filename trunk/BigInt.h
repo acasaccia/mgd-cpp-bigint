@@ -1,7 +1,8 @@
 /*! 
  *  BigInt class header
- *  It's an UnsignedBigInt plus a sign
- *  Manages to turn over UnsignedBigInt all the arithmetics making the necessary sign juggling to perform valid unsigned arithmetics
+ *  It's an UnsignedBigInt with a sign.
+ *  Manages to turn over UnsignedBigInt all the arithmetics making the necessary sign juggling
+ *  to perform valid unsigned arithmetics.
  *  -
  *  BigInt Homework - Advanced cpp programming
  *  Master in Computer Game Development, Verona, Italy

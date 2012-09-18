@@ -88,7 +88,7 @@ public:
 
 protected:
 
-	#pragma region Protected Methods and Members
+	#pragma region Protected Methods
 
 	static calc_t initializeBase();
 	UnsignedBigInt& divide(const UnsignedBigInt &iThat, divisionResult iMode);
