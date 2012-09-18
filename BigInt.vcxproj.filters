@@ -43,5 +43,8 @@
     <None Include="Readme.txt">
       <Filter>File di risorse</Filter>
     </None>
+    <None Include="214124124431412132545^1840.txt">
+      <Filter>File di risorse</Filter>
+    </None>
   </ItemGroup>
 </Project>
