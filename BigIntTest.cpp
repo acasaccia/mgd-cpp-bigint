@@ -21,8 +21,7 @@ namespace {
 
 	class UnsignedBigIntTest : public ::testing::Test {};
 
-	// UnsignedBigInt
-	// The operations on huge integers in this tests have been copy/pasted from a Sage worksheet http://www.sagemath.org/
+	// The operations on huge integers have been copy/pasted from a Sage worksheet http://www.sagemath.org/
 
 	#pragma region Integer constructors
 
@@ -295,16 +294,16 @@ namespace {
 
 		ASSERT_STREQ("2117667399768367790914905597950625", (c).toString().c_str());
 
-		//a = UnsignedBigInt("214124124431412132545");
-		//b = UnsignedBigInt("1840");
-		//c= pow(a,b); // lol 36,5Kb. We do what we must because we can.
+		a = UnsignedBigInt("214124124431412132545");
+		b = UnsignedBigInt("1840");
+		c= pow(a,b); // lol 36,5Kb. We do what we must because we can.
 
-		//std::ifstream t("..\\214124124431412132545^1840.txt");
-		//std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+		std::ifstream t("..\\214124124431412132545^1840.txt");
+		std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-		//ASSERT_TRUE(str.size()>0); // if this fail file with result hasn't been loaded properly
+		ASSERT_TRUE(str.size()>0); // if this fails it probably means the file with the result hasn't been loaded properly
 
-		//ASSERT_EQ(std::strcmp(str.c_str(),(c).toString().c_str()), 0);
+		ASSERT_EQ(std::strcmp(str.c_str(),(c).toString().c_str()), 0);
 
 	}
 
@@ -349,8 +348,6 @@ namespace {
 
 	
 	class BigIntTest : public ::testing::Test {};
-
-	// BigInt
 
 	#pragma region Integer constructors
 
