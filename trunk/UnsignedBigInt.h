@@ -91,7 +91,7 @@ protected:
 	#pragma region Protected Methods
 
 	static calc_t initializeBase();
-	UnsignedBigInt& divide(const UnsignedBigInt &iThat, divisionResult iMode);
+	UnsignedBigInt& divide(const UnsignedBigInt &iThat, DivisionResult iResultMode);
 	const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const;
 	const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString);
 	void UnsignedBigInt::trimLeadingZeros();

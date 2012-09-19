@@ -342,7 +342,7 @@ void UnsignedBigInt::trimLeadingZeros() {
 	}
 }
 
-UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, divisionResult iMode) {
+UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionResult iResultMode) {
 	
 	if (iDivisor == 0)
 		throw DivideByZeroException();
@@ -379,7 +379,7 @@ UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, divisionR
 		quotient.mDigits.push_back(multiplier);
 	}
 
-	iMode == QUOTIENT ? mDigits = quotient.mDigits : mDigits = subremainder.mDigits;
+	iResultMode == QUOTIENT ? mDigits = quotient.mDigits : mDigits = subremainder.mDigits;
 	
 	trimLeadingZeros();
 

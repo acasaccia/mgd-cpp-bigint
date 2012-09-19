@@ -8,12 +8,21 @@ date 5 August 2012
 
 ===============================================================================
 
-INTERNAL REPRESENTATION
+SIGNED ARBITRARY BIG INTEGERS
+
+Having an UnsignedBigInt up and running I could manage to create a BigInt class,
+representing an UnsignedBigInt with a sign. I could then turn over UnsignedBigInt
+all the arithmetics making the necessary sign juggling to perform valid unsigned
+arithmetics.
+
+===============================================================================
+
+UNSIGNED BIGINT INTERNAL REPRESENTATION
 
 To do the arithmetic the ideal choice is to use as base the square root of the
 largest integer supported fully by hardware arithmetics. Larger bases allow to
 represent the same number with less digits, and avoiding overflow grants us
-the best efficiency over the used hardware. [*]
+the best efficiency over the used hardware. [*] [**]
 
 Two basic types are defined:
 store_t to store a single digit,
@@ -45,6 +54,8 @@ bitwisely a BigInt class with non-contiguous bit internal representation. Does i
 make sense implementing bitwise `not` for such a class?
 
 [*] "The Algorithm Design Manual" Skiena S. pag. 423
+[**] My question on SO on how to pick the correct digit size:
+	 http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-fully-supported-by-hardware-arithmetics
 
 ===============================================================================
 
@@ -55,22 +66,13 @@ so look at those to see the actual code.
 Additions, subtractions and multiplications have been implemented with the basic
 schoolhouse method: they are well known and perform reasonably well. [**]
 
-For division the only trick I had to implement was a binary search when looking
-for how many times divisor fits into dividend. I initially implemented it with a
-linear search but it was incredibly slow.
+For division I had to implement a binary search when looking for how many times
+divisor fits into dividend. I initially naively implemented it with a linear
+search but it was incredibly slow even for "small" BigInts.
 
 For exponentation I used a basic exponentation by squaring method:
 http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
 [**] "The Art of Computer Programming", Knuth D. E. pag. 265
-
-===============================================================================
-
-SIGNED ARBITRARY BIG INTEGERS
-
-Having UnsignedBigInt up and running I managed to create a BigInt class,
-representing an UnsignedBigInt with a sign. I then managed to turn over
-UnsignedBigInt all the arithmetics making the necessary sign juggling to perform
-valid unsigned arithmetics.
 
 ===============================================================================
