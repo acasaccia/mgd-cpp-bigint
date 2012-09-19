@@ -16,35 +16,47 @@
 #include "UnsignedBigInt.h"
 
 class BigInt {
-public:
 
-#pragma region Constructors
+	Sign mSign;
+	UnsignedBigInt mMagnitude;
+
+	#pragma region Constructors
 
 	BigInt();
-	BigInt(const int iInteger);
+	BigInt(const unsigned long long iInteger);
+	BigInt(const unsigned long iInteger);
+	BigInt(const unsigned int iInteger);
+	BigInt(const unsigned short iInteger);
+	BigInt(const long long iSignedInteger);
+	BigInt(const long iSignedInteger);
+	BigInt(const int iSignedInteger);
+	BigInt(const short iSignedInteger);
 	BigInt(const std::string &iString);
+	BigInt(const UnsignedBigInt &iUnsignedBigInt);
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Compound assignment operators
+	#pragma region Compound assignment operators
 
 	BigInt& operator+=(const BigInt &iThat);
-	BigInt& operator-=(const BigInt &iBigInteger);
-	BigInt& operator*=(const BigInt &iBigInteger);
-	BigInt& operator/=(const BigInt &iBigInteger);
+	BigInt& operator-=(const BigInt &iThat);
+	BigInt& operator*=(const BigInt &iThat);
+	BigInt& operator/=(const BigInt &iThat);
+	BigInt& operator%=(const BigInt &iThat);
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Binary arithmetic operators
+	#pragma region Binary arithmetic operators
 
 	const BigInt operator+(const BigInt &iThat) const;
 	const BigInt operator-(const BigInt &iThat) const;
 	const BigInt operator*(const BigInt &iThat) const;
 	const BigInt operator/(const BigInt &iThat) const;
+	const BigInt operator%(const BigInt &iThat) const;
 	
-#pragma endregion
+	#pragma endregion
 
-#pragma region Comparison operators
+	#pragma region Comparison operators
 
 	bool operator==(const BigInt &iThat) const;
 	bool operator!=(const BigInt &iThat) const;
@@ -53,22 +65,46 @@ public:
 	bool operator<=(const BigInt &iThat) const;
 	bool operator>=(const BigInt &iThat) const;
 	
-#pragma endregion
+	#pragma endregion
 
-#pragma region Increment/Decrement operators
+	#pragma region Increment/Decrement operators
 
 	BigInt& operator++();
 	BigInt& operator--();
 	BigInt operator++(int);
 	BigInt operator--(int);
 
-#pragma endregion
+	#pragma endregion
 
-#pragma region Members
+	#pragma region Public Methods
 
-	bool mNegative;
-	UnsignedBigInt mMagnitude;
+	void print(std::ostream& os) const;
+	std::string toString() const;
+	static std::vector<bool> BigInt::digitToBinary(store_t iDigit);
 
-#pragma endregion
+	#pragma endregion
 
+	protected:
+
+	#pragma region Protected Methods
+
+	// Initialization logic is the same for all integer types
+	template <class T>
+	void constructFromInteger(const T iInteger) {
+		mNegative = false;
+		mMagnitude = UnsignedBigInt(iInteger);
+	}
+
+	template <class T>
+	void constructFromSignedInteger(const T iSignedInteger) {
+		mNegative = iSignedInteger < 0;
+		mMagnitude = UnsignedBigInt(iSignedInteger);
+	}
+
+	#pragma endregion
 };
+
+BigInt pow(const BigInt& iBase, const BigInt& iExponent);
+
+std::ostream& operator<<( std::ostream& os, const BigInt& iBigInt );
+std::istream& operator>>( std::istream& is, BigInt& iBigInt );

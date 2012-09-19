@@ -21,4 +21,5 @@ typedef uint64_t calc_t;	// type to perform calculation on two digits without ha
 
 typedef std::vector<store_t>::size_type digits_size_t;
 
-enum divisionResult { QUOTIENT,	REMAINDER };
+enum DivisionResult { QUOTIENT, REMAINDER };
+enum Sign { POSITIVE, NEGATIVE };
