@@ -13,8 +13,6 @@
 
 #pragma once
 
-
-
 typedef uint32_t store_t;	// type to store a digit
 typedef uint64_t calc_t;	// type to perform calculation on two digits without hardware overlflow, see my question on how to choose this:
 							// http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-supported-fully-by-hardware-arithmetics

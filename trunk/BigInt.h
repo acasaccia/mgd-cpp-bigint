@@ -16,6 +16,7 @@
 #include "UnsignedBigInt.h"
 
 class BigInt {
+public:
 
 	Sign mSign;
 	UnsignedBigInt mMagnitude;
@@ -84,21 +85,21 @@ class BigInt {
 
 	#pragma endregion
 
-	protected:
+protected:
 
 	#pragma region Protected Methods
 
 	// Initialization logic is the same for all integer types
 	template <class T>
 	void constructFromInteger(const T iInteger) {
-		mNegative = false;
+		mSign = POSITIVE;
 		mMagnitude = UnsignedBigInt(iInteger);
 	}
 
 	template <class T>
 	void constructFromSignedInteger(const T iSignedInteger) {
-		mNegative = iSignedInteger < 0;
-		mMagnitude = UnsignedBigInt(iSignedInteger);
+		mSign = iSignedInteger < 0 ? NEGATIVE : POSITIVE;
+		mMagnitude = UnsignedBigInt(iSignedInteger < 0 ? -iSignedInteger : iSignedInteger);
 	}
 
 	#pragma endregion

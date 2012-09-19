@@ -22,7 +22,7 @@ UNSIGNED BIGINT INTERNAL REPRESENTATION
 To do the arithmetic the ideal choice is to use as base the square root of the
 largest integer supported fully by hardware arithmetics. Larger bases allow to
 represent the same number with less digits, and avoiding overflow grants us
-the best efficiency over the used hardware. [*] [**]
+the best efficiency over the used hardware. [1]
 
 Two basic types are defined:
 store_t to store a single digit,
@@ -34,37 +34,37 @@ typedef uint64_t calc_t;
 These typedefs should be adjusted to get the best performance from the used
 hardware. If for example 64bit arithmetic is supported, it is better to use a
 64bit type for calculations while storing digits in a 32bit type to avoid
-overflow when multiplying two of them.
+overflow when multiplying two of them. [2]
 
-Using an unsigned type should give the advantage of non having to worry masking
+Using an unsigned type gives the advantage of non having to worry masking
 the high bit at any time.
 
 On the other side, conversion to base 10 will be necessary when displaying
 to get a human readable representation.
 
 I found an interesting compromise between SPEED - SPACE - REPRESENTATION is using
-as the base for big integer representation the largest power of ten that fits into
-the chosen store type. It saves a lot of space and gives a huge performance boost
-compared to decimal representation and saves us having to bother for conversions.
-Debugging is also a lot easier.
+the largest power of ten that fits into the chosen store type. It saves a lot of
+space and gives a huge performance boost compared to decimal representation and
+saves us having to bother for conversions. Debugging is also a lot easier.
 
 The tradeoff is on bitwise/shift operators: they have worse performance and slightly
 more complex implementation. Also, I have some doubts about the usefulness of using
 bitwisely a BigInt class with non-contiguous bit internal representation. Does it
 make sense implementing bitwise `not` for such a class?
 
-[*] "The Algorithm Design Manual" Skiena S. pag. 423
-[**] My question on SO on how to pick the correct digit size:
+[1] "The Algorithm Design Manual" Skiena S. pag. 423
+[2] My question on SO on how to pick the correct digit size:
 	 http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-fully-supported-by-hardware-arithmetics
 
 ===============================================================================
 
-UNSIGNED ARBITRARY INTEGER ARITHMETICS
+UNSIGNED BIGINT ARITHMETICS
 
 All binary operators have been implemented in terms of their compound operators,
 so look at those to see the actual code.
+
 Additions, subtractions and multiplications have been implemented with the basic
-schoolhouse method: they are well known and perform reasonably well. [**]
+schoolhouse method: they are well known and perform reasonably well. [3]
 
 For division I had to implement a binary search when looking for how many times
 divisor fits into dividend. I initially naively implemented it with a linear
@@ -73,6 +73,6 @@ search but it was incredibly slow even for "small" BigInts.
 For exponentation I used a basic exponentation by squaring method:
 http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
-[**] "The Art of Computer Programming", Knuth D. E. pag. 265
+[3] "The Art of Computer Programming", Knuth D. E. pag. 265
 
 ===============================================================================

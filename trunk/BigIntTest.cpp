@@ -295,16 +295,16 @@ namespace {
 
 		ASSERT_STREQ("2117667399768367790914905597950625", (c).toString().c_str());
 
-		a = UnsignedBigInt("214124124431412132545");
-		b = UnsignedBigInt("1840");
-		c= pow(a,b); // lol 36,5Kb. We do what we must because we can.
+		//a = UnsignedBigInt("214124124431412132545");
+		//b = UnsignedBigInt("1840");
+		//c= pow(a,b); // lol 36,5Kb. We do what we must because we can.
 
-		std::ifstream t("..\\214124124431412132545^1840.txt");
-		std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+		//std::ifstream t("..\\214124124431412132545^1840.txt");
+		//std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-		ASSERT_TRUE(str.size()>0);
+		//ASSERT_TRUE(str.size()>0); // if this fail file with result hasn't been loaded properly
 
-		ASSERT_EQ(std::strcmp(str.c_str(),(c).toString().c_str()), 0);
+		//ASSERT_EQ(std::strcmp(str.c_str(),(c).toString().c_str()), 0);
 
 	}
 
@@ -352,9 +352,88 @@ namespace {
 
 	// BigInt
 
-	TEST_F(BigIntTest, Nothing) {
+	#pragma region Integer constructors
+
+	TEST_F(BigIntTest, IntegerConstructors) {
+
+		BigInt a;
+
+		a = -4;
+		ASSERT_STREQ("-4", a.toString().c_str());
+
+		a = 12345;
+		ASSERT_STREQ("12345", a.toString().c_str());
+
+		a = -42949672;
+		ASSERT_STREQ("-42949672", a.toString().c_str());
+
+		a = 441243123294967295;
+		ASSERT_STREQ("441243123294967295", a.toString().c_str());
+
 	}
 
+	#pragma endregion
+
+	#pragma region String constructors
+
+	TEST_F(BigIntTest, StringConstructors) {
+
+		BigInt a;
+		ASSERT_THROW(a = BigInt("WAT?"), BadStringInitializationException);
+		ASSERT_THROW(a = BigInt("00-000-0"), BadStringInitializationException);
+
+		a = BigInt("   00000000 ");
+		ASSERT_STREQ("0",(a).toString().c_str());
+
+		a = BigInt("-47562497562947562947650245792     ");
+		ASSERT_STREQ("-47562497562947562947650245792", a.toString().c_str());
+
+		a = BigInt("   +  657465327280000000000000000000000245             ");
+		ASSERT_STREQ("657465327280000000000000000000000245", a.toString().c_str());
+
+		a = BigInt("00000000000010000000011111111000000000000000000000100000000011111111");
+		ASSERT_STREQ("10000000011111111000000000000000000000100000000011111111",(a).toString().c_str());
+
+	}
+
+	#pragma endregion
+
+	#pragma region Comparison
+
+	TEST_F(BigIntTest, Comparison) {
+
+		BigInt a, b;
+		a = BigInt("-62497562947562947650245791");
+		b = BigInt("47562497562947562947650245792");
+		ASSERT_TRUE(a < b);
+		ASSERT_TRUE(a != b);
+		ASSERT_TRUE(b > a);
+		ASSERT_FALSE(b > b);
+		ASSERT_FALSE(b != b);
+
+		a = BigInt("-47562497562947562947650245792");
+		b = BigInt("47562497562947562947650245792");
+		ASSERT_TRUE(a < b);
+		ASSERT_TRUE(a != b);
+		ASSERT_TRUE(b > a);
+
+		a = BigInt("-47562497562947562947650245792");
+		b = BigInt("-475624975629475629476502457926857");
+		ASSERT_TRUE(a > b);
+		ASSERT_TRUE(a != b);
+		ASSERT_TRUE(b < a);
+
+		a = BigInt("-29465429765154625427428736298750983567364537654286498479402989765564526565265466");
+		b = BigInt("-29465429765154625427428736298750983567364537654286498479402989765564526565265466");
+		ASSERT_TRUE(a == b);
+		ASSERT_TRUE(a <= b);
+		ASSERT_TRUE(a >= b);
+		ASSERT_FALSE(a > b);
+		ASSERT_FALSE(b < a);
+
+	}
+
+	#pragma endregion
 
 }  // namespace
 
