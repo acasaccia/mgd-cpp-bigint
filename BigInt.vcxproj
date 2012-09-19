@@ -69,12 +69,14 @@
     <ClCompile Include="BigInt.cpp" />
     <ClCompile Include="UnsignedBigInt.cpp" />
     <ClCompile Include="BigIntTest.cpp" />
+    <ClCompile Include="BigIntUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BigInt.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="UnsignedBigInt.h" />
+    <ClInclude Include="BigIntUtilities.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="214124124431412132545^1840.txt" />

@@ -11,6 +11,7 @@
 #include "UnsignedBigInt.h"
 #include <iomanip>
 #include <sstream>
+#include <regex>
 
 const calc_t UnsignedBigInt::mBase = UnsignedBigInt::initializeBase();
 
@@ -32,11 +33,14 @@ UnsignedBigInt::UnsignedBigInt(const short iSignedInteger) { constructFromSigned
 
 UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
-	if ( iString.find_first_not_of("0123456789") != std::string::npos )
+	std::regex integer_with_whitespaces("^[\s]*[0-9]+[\s]*$");
+
+	if ( !std::regex_match( iString, integer_with_whitespaces ) )
 		throw BadStringInitializationException();
 
 	std::string cleanString = iString;
-	cleanString = trimLeadingZeros(cleanString);
+	BigIntUtilities::removeWhitespaces(cleanString);
+	BigIntUtilities::trimLeadingZeros(cleanString);
 
 	mDigits = std::vector<store_t>();
 
@@ -324,14 +328,6 @@ calc_t UnsignedBigInt::initializeBase() {
 		base *= 10;
 	return base / 10;
 
-}
-
-const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString)
-{
-    const size_t beginStr = ioString.find_first_not_of("0");
-    if (beginStr == std::string::npos)
-		return "0";
-    return ioString.substr(beginStr);
 }
 
 void UnsignedBigInt::trimLeadingZeros() {

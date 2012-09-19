@@ -16,6 +16,7 @@
 #include <cstdint>
 #include "Types.h"
 #include "Exceptions.h"
+#include "BigIntUtilities.h"
 
 class UnsignedBigInt {
 public:
@@ -82,7 +83,7 @@ public:
 
 	void print(std::ostream& os) const;
 	std::string toString() const;
-	static std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit);
+	static std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit); // used by non-member function pow()
 
 	#pragma endregion
 
@@ -93,7 +94,6 @@ protected:
 	static calc_t initializeBase();
 	UnsignedBigInt& divide(const UnsignedBigInt &iThat, DivisionResult iResultMode);
 	const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const;
-	const std::string UnsignedBigInt::trimLeadingZeros(const std::string& ioString);
 	void UnsignedBigInt::trimLeadingZeros();
 	store_t UnsignedBigInt::getMultiplier(const UnsignedBigInt& iDivisor, const UnsignedBigInt& iDividend);
 
