@@ -1,8 +1,7 @@
 /*! 
- *  BigInt class header
- *  It's an UnsignedBigInt with a sign.
- *  Manages to turn over UnsignedBigInt all the arithmetics making the necessary sign juggling
- *  to perform valid unsigned arithmetics.
+ *  BigInt - represents a signed arbitrary precision integer
+ *  Turns over UnsignedBigInt all the arithmetics doing the
+ *  sign juggling to perform valid unsigned operations.
  *  -
  *  BigInt Homework - Advanced cpp programming
  *  Master in Computer Game Development, Verona, Italy
@@ -105,7 +104,7 @@ protected:
 	#pragma endregion
 };
 
-BigInt pow(const BigInt& iBase, const BigInt& iExponent);
+BigInt pow(const BigInt& iBase, const UnsignedBigInt& iExponent);
 
 std::ostream& operator<<( std::ostream& os, const BigInt& iBigInt );
 std::istream& operator>>( std::istream& is, BigInt& iBigInt );

@@ -1,5 +1,7 @@
 /*! 
- *  BigInt class implementation
+ *  BigInt - represents a signed arbitrary precision integer
+ *  Turns over UnsignedBigInt all the arithmetics doing the
+ *  sign juggling to perform valid unsigned operations.
  *  -
  *  BigInt Homework - Advanced cpp programming
  *  Master in Computer Game Development, Verona, Italy
@@ -94,7 +96,8 @@ BigInt& BigInt::operator/=(const BigInt &iThat) {
 
 BigInt& BigInt::operator%=(const BigInt &iThat) {
 	mMagnitude %= iThat.mMagnitude;
-	mSign == iThat.mSign ? mSign = POSITIVE : mSign = NEGATIVE;
+	// C++ (ISO 2011) operator % result's has same sign as dividend
+	mSign == mSign;
 	return *this;
 }
 
@@ -127,7 +130,8 @@ const BigInt BigInt::operator%(const BigInt &iThat) const {
 #pragma region Comparison operators
 
 bool BigInt::operator==(const BigInt &iThat) const {
-	return (mSign == iThat.mSign && mMagnitude == iThat.mMagnitude);
+	// special case for 0 is needed: we don't want -0 to be treated differently from +0
+	return (mSign == iThat.mSign && (mMagnitude != 0 && mMagnitude == iThat.mMagnitude));
 }
 
 bool BigInt::operator!=(const BigInt &iThat) const {
@@ -185,7 +189,8 @@ BigInt BigInt::operator--(int) {
 #pragma region Public Methods
 
 void BigInt::print(std::ostream& os) const {
-	os << ( mSign == POSITIVE ? "" : "-" ) << mMagnitude;
+	// special case for 0 is needed: we don't want -0 to be treated differently from +0
+	os << ( mSign == POSITIVE || mMagnitude == 0 ? "" : "-" ) << mMagnitude;
 }
 
 std::string BigInt::toString() const {
@@ -210,7 +215,7 @@ std::vector<bool> BigInt::digitToBinary(store_t iDigit) {
 
 #pragma endregion
 
-#pragma region Non members operators
+#pragma region Stream operators and Exponentation
 
 std::ostream& operator<<( std::ostream& os, const BigInt& iBigInt ) {
 	iBigInt.print(os);
@@ -242,7 +247,7 @@ BigInt pow(const BigInt& iBase, const UnsignedBigInt& iExponent) {
 		}
 	}
 	bool evenExponent = iExponent.mDigits.back() % 2 == 0;
-	result.mSign = evenExponent ? POSITIVE : result.mSign;
+	result.mSign = evenExponent ? POSITIVE : iBase.mSign;
 	return result;
 }
 

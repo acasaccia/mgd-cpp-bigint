@@ -1,5 +1,5 @@
 /*! 
- *  Unsigned Big Integer
+ *  BigInt - represents an unsigned arbitrary precision integer
  *  -
  *  BigInt Homework - Advanced cpp programming
  *  Master in Computer Game Development, Verona, Italy
@@ -125,7 +125,7 @@ protected:
 
 };
 
-UnsignedBigInt pow(const UnsignedBigInt& iBase, const UnsignedBigInt& iExponent);
-
 std::ostream& operator<<( std::ostream& os, const UnsignedBigInt& iUnsignedBigInt );
 std::istream& operator>>( std::istream& is, UnsignedBigInt& iUnsignedBigInt );
+
+UnsignedBigInt pow(const UnsignedBigInt& iBase, const UnsignedBigInt& iExponent);

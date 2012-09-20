@@ -10,21 +10,20 @@ date 5 August 2012
 
 SIGNED ARBITRARY BIG INTEGERS
 
-Having an UnsignedBigInt up and running I could manage to create a BigInt class,
-representing an UnsignedBigInt with a sign. I could then turn over UnsignedBigInt
-all the arithmetics making the necessary sign juggling to perform valid unsigned
-arithmetics.
+Having UnsignedBigInt up and running I thinked of BigInt as an UnsignedBigInt
+with a sign. I forwarded to UnsignedBigInt all the arithmetics making the
+necessary sign juggling to perform valid unsigned operations.
 
 ===============================================================================
 
 UNSIGNED BIGINT INTERNAL REPRESENTATION
 
-To do the arithmetic the ideal choice is to use as base the square root of the
+Performance-wise the ideal choice is to use as base the square root of the
 largest integer supported fully by hardware arithmetics. Larger bases allow to
 represent the same number with less digits, and avoiding overflow grants us
 the best efficiency over the used hardware. [1]
 
-Two basic types are defined:
+I defined two basic types:
 store_t to store a single digit,
 calc_t to perform arithmetics on two digits avoiding overflow
 
@@ -33,7 +32,7 @@ typedef uint64_t calc_t;
 
 These typedefs should be adjusted to get the best performance from the used
 hardware. If for example 64bit arithmetic is supported, it is better to use a
-64bit type for calculations while storing digits in a 32bit type to avoid
+64bit type for calculations, and to store digits in a 32bit type to avoid
 overflow when multiplying two of them. [2]
 
 Using an unsigned type gives the advantage of non having to worry masking
@@ -42,14 +41,14 @@ the high bit at any time.
 On the other side, conversion to base 10 will be necessary when displaying
 to get a human readable representation.
 
-I found an interesting compromise between SPEED - SPACE - REPRESENTATION is using
+I found an interesting compromise between SPEED - SPACE - READABILITY is using
 the largest power of ten that fits into the chosen store type. It saves a lot of
 space and gives a huge performance boost compared to decimal representation and
 saves us having to bother for conversions. Debugging is also a lot easier.
 
 The tradeoff is on bitwise/shift operators: they have worse performance and slightly
-more complex implementation. Also, I have some doubts about the usefulness of using
-bitwisely a BigInt class with non-contiguous bit internal representation. Does it
+more complex implementation. Also, I have some doubts about the usefulness of bitwise
+operators in a BigInt class with non-contiguous bit internal representation. Does it
 make sense implementing bitwise `not` for such a class?
 
 [1] "The Algorithm Design Manual" Skiena S. pag. 423
@@ -74,5 +73,13 @@ For exponentation I used a basic exponentation by squaring method:
 http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
 [3] "The Art of Computer Programming", Knuth D. E. pag. 265
+
+===============================================================================
+
+BIGINT NOTES
+
+The sign of % operator has been implemented as in the new standard specification,
+the same as the dividend.
+http://en.wikipedia.org/wiki/Modulo_operation
 
 ===============================================================================
