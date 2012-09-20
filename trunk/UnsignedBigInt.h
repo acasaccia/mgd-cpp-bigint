@@ -39,7 +39,7 @@ public:
 
 	#pragma endregion
 
-	#pragma region Compound assignment operators
+	#pragma region Compound assignment arithmetic operators
 
 	UnsignedBigInt& operator+=(const UnsignedBigInt &iThat);
 	UnsignedBigInt& operator-=(const UnsignedBigInt &iThat);
@@ -79,6 +79,30 @@ public:
 
 	#pragma endregion
 
+	#pragma region Shift operators
+
+	UnsignedBigInt& operator<<=(const UnsignedBigInt &iThat);
+	UnsignedBigInt& operator>>=(const UnsignedBigInt &iThat);
+
+	const UnsignedBigInt operator<<(const UnsignedBigInt &iThat) const;
+	const UnsignedBigInt operator>>(const UnsignedBigInt &iThat) const;
+
+	#pragma endregion
+
+	#pragma region Bitwise operators
+
+	UnsignedBigInt& operator&=(const UnsignedBigInt &iThat);
+	UnsignedBigInt& operator|=(const UnsignedBigInt &iThat);
+	UnsignedBigInt& operator^=(const UnsignedBigInt &iThat);
+	//UnsignedBigInt& operator~=(const UnsignedBigInt &iThat);
+
+	const UnsignedBigInt operator&(const UnsignedBigInt &iThat) const;
+	const UnsignedBigInt operator|(const UnsignedBigInt &iThat) const;
+	const UnsignedBigInt operator^(const UnsignedBigInt &iThat) const;
+	const UnsignedBigInt operator~() const;
+
+	#pragma endregion
+
 	#pragma region Public Methods
 
 	void print(std::ostream& os) const;
@@ -101,7 +125,9 @@ protected:
 	template <class T>
 	void constructFromInteger(const T iInteger) {
 		// If input fits a single digit we initialize it
-		if ( iInteger < mBase - 1 ) {
+		// static cast is safe because we dont accept integer types bigger than long long and it eliminates
+		// the "wrong signed and unsigned correspondence" warning
+		if ( static_cast<unsigned long long>(iInteger) < mBase - 1 ) {
 			mDigits = std::vector<store_t> ();
 			store_t digit = static_cast<store_t>(iInteger);
 			mDigits.push_back(digit);

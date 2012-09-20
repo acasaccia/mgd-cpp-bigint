@@ -61,7 +61,7 @@ BigInt::BigInt(const UnsignedBigInt &iUnsignedBigInt) {
 
 #pragma endregion
 
-#pragma region Compound assignment operators
+#pragma region Compound assignment arithmetic operators
 
 BigInt& BigInt::operator+=(const BigInt &iThat) {
 	if (mSign == iThat.mSign) {
@@ -97,7 +97,6 @@ BigInt& BigInt::operator/=(const BigInt &iThat) {
 BigInt& BigInt::operator%=(const BigInt &iThat) {
 	mMagnitude %= iThat.mMagnitude;
 	// C++ (ISO 2011) operator % result's has same sign as dividend
-	mSign == mSign;
 	return *this;
 }
 
@@ -162,7 +161,7 @@ bool BigInt::operator>=(const BigInt &iThat) const {
 
 #pragma endregion
 
-#pragma region Increment/Decrement operators
+#pragma region Unary operators
 
 BigInt& BigInt::operator++() {
 	return *this += 1;
@@ -182,6 +181,12 @@ BigInt BigInt::operator--(int) {
     BigInt result(*this);   // make a copy for result
     --(*this);				// Now use the prefix version to do the work
     return result;			// return the copy (the old) value.
+}
+
+BigInt BigInt::operator-() const {
+	BigInt result(*this);
+	result.mSign = ( result.mSign == POSITIVE ? NEGATIVE : POSITIVE);
+	return result;
 }
 
 #pragma endregion
@@ -240,7 +245,7 @@ BigInt pow(const BigInt& iBase, const UnsignedBigInt& iExponent) {
 	std::vector<bool> binaryDigit;
 	for (digits_size_t i=0; i<iExponent.mDigits.size(); i++) {
 		binaryDigit = BigInt::digitToBinary(iExponent.mDigits[i]);
-		for (short j=0; j<binaryDigit.size(); j++) {
+		for (unsigned short j=0; j<binaryDigit.size(); j++) {
 			result.mMagnitude *= result.mMagnitude;
 			if (binaryDigit[j])
 				result.mMagnitude *= iBase.mMagnitude;
