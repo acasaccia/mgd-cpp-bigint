@@ -294,7 +294,7 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 
 void UnsignedBigInt::print(std::ostream& os) const {
 	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
-	os << mDigits.front(); // no padding for most significant digit, ty
+	os << mDigits.front(); // no padding for most significant digit
 	for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
 		os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits[i];
 	}
@@ -325,11 +325,8 @@ std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit) {
 #pragma region Protected Methods
 
 calc_t UnsignedBigInt::initializeBase() {
-	// Use as base the bigger value that can be stored in store_t
-	// return static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
-
-	// This is much easier for human readability: see readme file for details.
 	// Get largest power of ten that fits store_t + 1.
+	// \see Readme.txt if you wonder why
 	calc_t max_base = static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
 	calc_t base = 1;
 	while (base < max_base)
@@ -361,7 +358,7 @@ UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionR
 	dividend_size = mDigits.size();
 	subdividend = 0;
 
-	// pick first n digits of dividend until candidate > divisor
+	// pick first n digits of dividend until subdividend > divisor
 	do {
 		subdividend.mDigits = std::vector<store_t>(mDigits.begin(), mDigits.begin()+n);
 		n++;
