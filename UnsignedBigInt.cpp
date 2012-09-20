@@ -33,7 +33,7 @@ UnsignedBigInt::UnsignedBigInt(const short iSignedInteger) { constructFromSigned
 
 UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
-	std::regex integer_with_whitespaces("^[\s]*[0-9]+[\s]*$");
+	std::regex integer_with_whitespaces("^[\\s]*[0-9]+[\\s]*$");
 
 	if ( !std::regex_match( iString, integer_with_whitespaces ) )
 		throw BadStringInitializationException();
@@ -439,7 +439,7 @@ UnsignedBigInt pow(const UnsignedBigInt& iBase, const UnsignedBigInt& iExponent)
 	std::vector<bool> binaryDigit;
 	for (digits_size_t i=0; i<iExponent.mDigits.size(); i++) {
 		binaryDigit = UnsignedBigInt::digitToBinary(iExponent.mDigits[i]);
-		for (short j=0; j<binaryDigit.size(); j++) {
+		for (unsigned short j=0; j<binaryDigit.size(); j++) {
 			result *= result;
 			if (binaryDigit[j])
 				result *= iBase;
