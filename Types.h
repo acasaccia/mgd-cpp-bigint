@@ -2,7 +2,7 @@
  *  The following typedefs should be adjusted to get the best performance from your hardware.
  *  If for example 64bit arithmetic is supported, it is better to use a 64bit type
  *  for calculations and store digits in a 32bit type to avoid overflow  when multiplying two of them.
- *  Using unsigned types is a requirement.
+ *  Using unsigned types is required by the implementation.
  *  -
  *  BigInt Homework - Advanced cpp programming
  *  Master in Computer Game Development, Verona, Italy

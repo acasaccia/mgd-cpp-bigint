@@ -1,5 +1,5 @@
 /*! 
- *  UnsignedBigInt class implementation
+ *  BigInt - represents an unsigned arbitrary precision integer
  *  -
  *  BigInt Homework - Advanced cpp programming
  *  Master in Computer Game Development, Verona, Italy
@@ -282,6 +282,14 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 
 #pragma endregion
 
+#pragma region Shift operators
+
+#pragma endregion
+
+#pragma region Bitwise operators
+
+#pragma endregion
+
 #pragma region Public Methods
 
 void UnsignedBigInt::print(std::ostream& os) const {
@@ -409,7 +417,7 @@ store_t UnsignedBigInt::getMultiplier(const UnsignedBigInt& iDivisor, const Unsi
 
 #pragma endregion
 
-#pragma region Non members operators
+#pragma region Stream operators and Exponentation
 
 std::ostream& operator<<( std::ostream& os, const UnsignedBigInt& iUnsignedBigInt ) {
 	iUnsignedBigInt.print(os);
