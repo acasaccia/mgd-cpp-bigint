@@ -36,7 +36,7 @@ public:
 
 	#pragma endregion
 
-	#pragma region Compound assignment operators
+	#pragma region Compound assignment arithmetic operators
 
 	BigInt& operator+=(const BigInt &iThat);
 	BigInt& operator-=(const BigInt &iThat);
@@ -67,12 +67,13 @@ public:
 	
 	#pragma endregion
 
-	#pragma region Increment/Decrement operators
+	#pragma region Unary operators
 
 	BigInt& operator++();
 	BigInt& operator--();
 	BigInt operator++(int);
 	BigInt operator--(int);
+	BigInt operator-() const;
 
 	#pragma endregion
 

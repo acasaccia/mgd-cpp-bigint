@@ -21,7 +21,7 @@ namespace {
 
 	class UnsignedBigIntTest : public ::testing::Test {};
 
-	// The operations on huge integers have been copy/pasted from a Sage worksheet http://www.sagemath.org/
+	// The operations on big integers have been copy/pasted from a Sage worksheet http://www.sagemath.org/
 
 	#pragma region Integer constructors
 
@@ -599,7 +599,7 @@ namespace {
 
 	#pragma endregion
 
-	#pragma region Increment / Decrement
+	#pragma region Unary
 
 	TEST_F(BigIntTest, IncrementDecrement) {
 
@@ -607,8 +607,8 @@ namespace {
 		ASSERT_STREQ("-8375639165791754013759651937651937651937659", (++a).toString().c_str());
 		a--;
 		ASSERT_STREQ("-8375639165791754013759651937651937651937660", a.toString().c_str());
-		ASSERT_STREQ("-8375639165791754013759651937651937651937660", (a++).toString().c_str());
-		ASSERT_STREQ("-8375639165791754013759651937651937651937659", a.toString().c_str());
+		ASSERT_STREQ("8375639165791754013759651937651937651937660", (-(a++)).toString().c_str());
+		ASSERT_STREQ("8375639165791754013759651937651937651937659", (-a).toString().c_str());
 
 		a = BigInt("-3");
 		ASSERT_STREQ("-2", (++a).toString().c_str());
@@ -621,6 +621,7 @@ namespace {
 		ASSERT_STREQ("0", (--a).toString().c_str());
 		ASSERT_STREQ("0", (a--).toString().c_str());
 		ASSERT_STREQ("-2", (--a).toString().c_str());
+		ASSERT_STREQ("2", (-a).toString().c_str());
 
 	}
 
@@ -652,8 +653,6 @@ namespace {
 	}
 
 	#pragma endregion
-
-
 
 }  // namespace
 

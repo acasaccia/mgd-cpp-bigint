@@ -73,7 +73,7 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
 #pragma endregion
 
-#pragma region Compound assignment operators
+#pragma region Compound assignment arithmetic operators
 
 UnsignedBigInt& UnsignedBigInt::operator+=(const UnsignedBigInt &iThat) {
 
@@ -283,6 +283,8 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 #pragma endregion
 
 #pragma region Shift operators
+
+
 
 #pragma endregion
 
