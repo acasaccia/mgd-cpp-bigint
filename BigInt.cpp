@@ -161,7 +161,17 @@ bool BigInt::operator>=(const BigInt &iThat) const {
 
 #pragma endregion
 
-#pragma region Unary operators
+#pragma region Unary sign
+
+BigInt BigInt::operator-() const {
+	BigInt result(*this);
+	result.mSign = ( result.mSign == POSITIVE ? NEGATIVE : POSITIVE);
+	return result;
+}
+
+#pragma endregion
+
+#pragma region Increment / Decrement
 
 BigInt& BigInt::operator++() {
 	return *this += 1;
@@ -183,10 +193,30 @@ BigInt BigInt::operator--(int) {
     return result;			// return the copy (the old) value.
 }
 
-BigInt BigInt::operator-() const {
+#pragma endregion
+
+#pragma region Shift operators
+
+BigInt& BigInt::operator<<=(const int iPlaces) {
+	// preserve the sign and work as expected on number's magnitude
+	mMagnitude <<= iPlaces;
+	return *this;
+}
+
+BigInt& BigInt::operator>>=(const int iPlaces) {
+	// preserve the sign and work as expected on number's magnitude
+	mMagnitude >>= iPlaces;
+	return *this;
+}
+
+const BigInt BigInt::operator<<(const int iPlaces) const {
 	BigInt result(*this);
-	result.mSign = ( result.mSign == POSITIVE ? NEGATIVE : POSITIVE);
-	return result;
+	return result <<= iPlaces;
+}
+
+const BigInt BigInt::operator>>(const int iPlaces) const {
+	BigInt result(*this);
+	return result >>= iPlaces;
 }
 
 #pragma endregion

@@ -81,11 +81,11 @@ public:
 
 	#pragma region Shift operators
 
-	UnsignedBigInt& operator<<=(const UnsignedBigInt &iThat);
-	UnsignedBigInt& operator>>=(const UnsignedBigInt &iThat);
+	UnsignedBigInt& operator<<=(const int iPlaces);
+	UnsignedBigInt& operator>>=(const int iPlaces);
 
-	const UnsignedBigInt operator<<(const UnsignedBigInt &iThat) const;
-	const UnsignedBigInt operator>>(const UnsignedBigInt &iThat) const;
+	const UnsignedBigInt operator<<(const int iPlaces) const;
+	const UnsignedBigInt operator>>(const int iPlaces) const;
 
 	#pragma endregion
 
@@ -94,7 +94,6 @@ public:
 	UnsignedBigInt& operator&=(const UnsignedBigInt &iThat);
 	UnsignedBigInt& operator|=(const UnsignedBigInt &iThat);
 	UnsignedBigInt& operator^=(const UnsignedBigInt &iThat);
-	//UnsignedBigInt& operator~=(const UnsignedBigInt &iThat);
 
 	const UnsignedBigInt operator&(const UnsignedBigInt &iThat) const;
 	const UnsignedBigInt operator|(const UnsignedBigInt &iThat) const;
