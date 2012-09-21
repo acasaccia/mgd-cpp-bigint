@@ -219,9 +219,10 @@ const UnsignedBigInt UnsignedBigInt::operator%(const UnsignedBigInt &iThat) cons
 #pragma region Comparison operators
 
 bool UnsignedBigInt::operator==(const UnsignedBigInt &iThat) const {
-	if ( mDigits.size() != iThat.mDigits.size() )
+	digits_size_t this_size = mDigits.size();
+	if ( this_size != iThat.mDigits.size() )
 		return false;
-	for (digits_size_t i = 0; i < mDigits.size(); i++ ) {
+	for (digits_size_t i = 0; i < this_size; i++ ) {
 		if (mDigits[i] != iThat.mDigits[i])
 			return false;
 	}
@@ -237,7 +238,7 @@ bool UnsignedBigInt::operator<(const UnsignedBigInt &iThat) const {
 	digits_size_t that_size = iThat.mDigits.size();
 	if ( this_size != that_size )
 		return this_size < that_size;
-	for (digits_size_t i = 0; i < mDigits.size(); i++ ) {
+	for (digits_size_t i = 0; i < this_size; i++ ) {
 		if (mDigits[i] != iThat.mDigits[i])
 			return mDigits[i] < iThat.mDigits[i];
 	}
@@ -258,7 +259,7 @@ bool UnsignedBigInt::operator>=(const UnsignedBigInt &iThat) const {
 
 #pragma endregion
 
-#pragma region Increment/Decrement operators
+#pragma region Increment / Decrement operators
 
 UnsignedBigInt& UnsignedBigInt::operator++() {
 	return *this += 1;
@@ -284,11 +285,55 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 
 #pragma region Shift operators
 
+UnsignedBigInt& UnsignedBigInt::operator<<=(const int iPlaces) {
+	return *this *= pow( UnsignedBigInt(2), UnsignedBigInt(iPlaces) );
+}
 
+UnsignedBigInt& UnsignedBigInt::operator>>=(const int iPlaces) {
+	return *this /= pow( UnsignedBigInt(2), UnsignedBigInt(iPlaces) );
+}
+
+const UnsignedBigInt UnsignedBigInt::operator<<(const int iPlaces) const {
+	UnsignedBigInt result(*this);
+	return result <<= iPlaces;
+}
+
+const UnsignedBigInt UnsignedBigInt::operator>>(const int iPlaces) const {
+	UnsignedBigInt result(*this);
+	return result >>= iPlaces;
+}
 
 #pragma endregion
 
 #pragma region Bitwise operators
+
+UnsignedBigInt& UnsignedBigInt::operator&=(const UnsignedBigInt &iThat) {
+	return *this;
+}
+
+UnsignedBigInt& UnsignedBigInt::operator|=(const UnsignedBigInt &iThat) {
+	return *this;
+}
+
+UnsignedBigInt& UnsignedBigInt::operator^=(const UnsignedBigInt &iThat) {
+	return *this;
+}
+
+const UnsignedBigInt UnsignedBigInt::operator&(const UnsignedBigInt &iThat) const {
+	return UnsignedBigInt(*this);
+}
+
+const UnsignedBigInt UnsignedBigInt::operator|(const UnsignedBigInt &iThat) const {
+	return UnsignedBigInt(*this);
+}
+
+const UnsignedBigInt UnsignedBigInt::operator^(const UnsignedBigInt &iThat) const {
+	return UnsignedBigInt(*this);
+}
+
+const UnsignedBigInt UnsignedBigInt::operator~() const {
+	return UnsignedBigInt(*this);
+}
 
 #pragma endregion
 

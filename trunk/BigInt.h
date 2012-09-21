@@ -67,13 +67,41 @@ public:
 	
 	#pragma endregion
 
-	#pragma region Unary operators
+	#pragma region Increment/Decrement operators
 
 	BigInt& operator++();
 	BigInt& operator--();
 	BigInt operator++(int);
 	BigInt operator--(int);
+
+	#pragma endregion
+
+	#pragma region Unary sign operators
+	
 	BigInt operator-() const;
+
+	#pragma endregion
+
+	#pragma region Shift operators
+
+	BigInt& operator<<=(const int iPlaces);
+	BigInt& operator>>=(const int iPlaces);
+
+	const BigInt operator<<(const int iPlaces) const;
+	const BigInt operator>>(const int iPlaces) const;
+
+	#pragma endregion
+
+	#pragma region Bitwise operators
+
+	BigInt& operator&=(const BigInt &iThat);
+	BigInt& operator|=(const BigInt &iThat);
+	BigInt& operator^=(const BigInt &iThat);
+
+	const BigInt operator&(const BigInt &iThat) const;
+	const BigInt operator|(const BigInt &iThat) const;
+	const BigInt operator^(const BigInt &iThat) const;
+	const BigInt operator~() const;
 
 	#pragma endregion
 

@@ -47,9 +47,7 @@ space and gives a huge performance boost compared to decimal representation and
 saves us having to bother for conversions. Debugging is also a lot easier.
 
 The tradeoff is on bitwise/shift operators: they have worse performance and slightly
-more complex implementation. Also, I have some doubts about the usefulness of bitwise
-operators in a BigInt class with non-contiguous bit internal representation. Does it
-make sense implementing bitwise `not` for such a class?
+more complex implementation.
 
 [1] "The Algorithm Design Manual" Skiena S. pag. 423
 [2] My question on SO on how to pick the correct digit size:
@@ -66,20 +64,39 @@ Additions, subtractions and multiplications have been implemented with the basic
 schoolhouse method: they are well known and perform reasonably well. [3]
 
 For division I had to implement a binary search when looking for how many times
-divisor fits into dividend. I initially naively implemented it with a linear
-search but it was incredibly slow even for "small" BigInts.
+divisor fits into dividend, this way I achieved decent performances for the
+purpose of this project.
 
-For exponentation I used a basic exponentation by squaring method:
+For exponentation I used exponentation by squaring method:
 http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
 [3] "The Art of Computer Programming", Knuth D. E. pag. 265
 
 ===============================================================================
 
-BIGINT NOTES
+IMPLEMENTATION NOTES
 
-The sign of % operator has been implemented as in the new standard specification,
-the same as the dividend.
-http://en.wikipedia.org/wiki/Modulo_operation
+The sign of % operator has been implemented as in the C++11 specification,
+the same as dividend. http://en.wikipedia.org/wiki/Modulo_operation
+
+Shift operators have been implemented as "arithmetic" shifts, simply stating
+that a << b = a * 2^b . The standard discourages the use of shift with
+signed integer types, because the result is implementation dependent. In this
+implementation I preserve the sign and work as expected on number's magnitude.
+
+Shifting by a negative value is undefined behaviour in the standard, I throw an
+exception when it happens.
+
+Other bitwise operators are implemented as plain "logical" operators: I perform
+those digit to digit. If one operand is smaller in digits than the other, its
+missing digits are considered zeros. For (signed) BigInt sign is taken into
+account: "+" is a true value, "-" a false one.
+
+===============================================================================
+
+KNOWN BUGS
+
+I must have used some uninitiliazed variable somewhere :/
+All works in Debug mode but when compiling in Release I get undefined behaviour.
 
 ===============================================================================

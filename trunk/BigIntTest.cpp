@@ -282,6 +282,28 @@ namespace {
 
 	#pragma endregion
 
+	#pragma region Shifting
+
+	TEST_F(UnsignedBigIntTest, Shifting) {
+
+		int places = 23;
+		UnsignedBigInt a, b;
+		b = pow(UnsignedBigInt(2), UnsignedBigInt(places));
+
+		a = UnsignedBigInt("83164513654178581346831");
+		ASSERT_STREQ((a * b).toString().c_str(), (a << places).toString().c_str());
+		ASSERT_STREQ((a / b).toString().c_str(), (a >> places).toString().c_str());
+
+	}
+	
+	#pragma endregion
+
+	#pragma region Bitwise
+
+	
+	
+	#pragma endregion
+
 	#pragma region Exponentation
 
 	TEST_F(UnsignedBigIntTest, Exponentation) {
@@ -599,7 +621,7 @@ namespace {
 
 	#pragma endregion
 
-	#pragma region Unary
+	#pragma region Increment / Decrement, unary sign
 
 	TEST_F(BigIntTest, IncrementDecrement) {
 
@@ -625,6 +647,29 @@ namespace {
 
 	}
 
+	#pragma endregion
+
+	#pragma region Shifting
+
+	TEST_F(BigIntTest, Shifting) {
+
+		int places = 23;
+		BigInt a;
+		UnsignedBigInt b;
+		b = pow(UnsignedBigInt(2), UnsignedBigInt(places));
+
+		a = BigInt("-83164513654178581346831");
+		ASSERT_STREQ((a * b).toString().c_str(), (a << places).toString().c_str());
+		ASSERT_STREQ((a / b).toString().c_str(), (a >> places).toString().c_str());
+
+	}
+	
+	#pragma endregion
+
+	#pragma region Bitwise
+
+	
+	
 	#pragma endregion
 
 	#pragma region Exponentation
