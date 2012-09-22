@@ -14,6 +14,7 @@
 #include <string>
 #include <iostream>
 #include <cstdint>
+#include <tuple>
 #include "Types.h"
 #include "Exceptions.h"
 #include "BigIntUtilities.h"
@@ -115,19 +116,21 @@ protected:
 	#pragma region Protected Methods
 
 	static calc_t initializeBase();
-	UnsignedBigInt& divide(const UnsignedBigInt &iThat, DivisionResult iResultMode);
-	const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const;
+	const store_t getPrintBase() const;
 	void UnsignedBigInt::trimLeadingZeros();
-	store_t UnsignedBigInt::getMultiplier(const UnsignedBigInt& iDivisor, const UnsignedBigInt& iDividend);
-
+	const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const;
+	void divide(const UnsignedBigInt &iThat, DivisionResult &oDivisionResult);
+	UnsignedBigInt& quotient(const UnsignedBigInt &iThat);
+	UnsignedBigInt& remainder(const UnsignedBigInt &iThat);
+	store_t UnsignedBigInt::guessMultiplier(const UnsignedBigInt& iDivisor, const UnsignedBigInt& iDividend);
+	
 	// Initialization logic is the same for all integer types
 	template <class T>
 	void constructFromInteger(const T iInteger) {
 		// If input fits a single digit we initialize it
-		// static cast is safe because we dont accept integer types bigger than long long and it eliminates
-		// the "wrong signed and unsigned correspondence" warning
+		// static cast is safe: we dont accept integer types bigger than long long
 		if ( static_cast<unsigned long long>(iInteger) < mBase - 1 ) {
-			mDigits = std::vector<store_t> ();
+			mDigits = std::vector<store_t>();
 			store_t digit = static_cast<store_t>(iInteger);
 			mDigits.push_back(digit);
 		} else {

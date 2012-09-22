@@ -9,7 +9,6 @@
  */
 
 #include "UnsignedBigInt.h"
-#include <iomanip>
 #include <sstream>
 #include <regex>
 
@@ -163,30 +162,12 @@ UnsignedBigInt& UnsignedBigInt::operator*=(const UnsignedBigInt &iThat) {
 	return *this;
 }
 
-const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const {
-	UnsignedBigInt tmpUnsignedBigInt = UnsignedBigInt(*this);
-	digits_size_t size = tmpUnsignedBigInt.mDigits.size();
-	calc_t multiplier, current_digit, tmp, carry;
-	multiplier = multiplier = static_cast<calc_t>(iMultiplier);
-	carry = 0;
-	for ( digits_size_t i = 0; i < size; i++ ) {
-		// promote both to calc_t
-		current_digit = static_cast<calc_t>(tmpUnsignedBigInt.mDigits[size - 1 - i]);
-		tmp = current_digit * multiplier + carry;
-		carry = tmp / mBase;
-		tmpUnsignedBigInt.mDigits[size - 1 - i] = static_cast<store_t>(tmp % mBase);
-	}
-	if (carry)
-		tmpUnsignedBigInt.mDigits.insert(tmpUnsignedBigInt.mDigits.begin(), carry);
-	return tmpUnsignedBigInt;
-}
-
 UnsignedBigInt& UnsignedBigInt::operator/=(const UnsignedBigInt &iThat) {
-	return divide(iThat, QUOTIENT);
+	return quotient(iThat);
 }
 
 UnsignedBigInt& UnsignedBigInt::operator%=(const UnsignedBigInt &iThat) {
-	return divide(iThat, REMAINDER);
+	return remainder(iThat);
 }
 
 #pragma endregion
@@ -320,15 +301,15 @@ UnsignedBigInt& UnsignedBigInt::operator^=(const UnsignedBigInt &iThat) {
 }
 
 const UnsignedBigInt UnsignedBigInt::operator&(const UnsignedBigInt &iThat) const {
-	return UnsignedBigInt(*this);
+	return UnsignedBigInt(*this) &= iThat;
 }
 
 const UnsignedBigInt UnsignedBigInt::operator|(const UnsignedBigInt &iThat) const {
-	return UnsignedBigInt(*this);
+	return UnsignedBigInt(*this) |= iThat;
 }
 
 const UnsignedBigInt UnsignedBigInt::operator^(const UnsignedBigInt &iThat) const {
-	return UnsignedBigInt(*this);
+	return UnsignedBigInt(*this) ^= iThat;
 }
 
 const UnsignedBigInt UnsignedBigInt::operator~() const {
@@ -340,11 +321,42 @@ const UnsignedBigInt UnsignedBigInt::operator~() const {
 #pragma region Public Methods
 
 void UnsignedBigInt::print(std::ostream& os) const {
-	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
-	os << mDigits.front(); // no padding for most significant digit
-	for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
-		os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits[i];
+
+	if (*this == 0) {
+		os << "0";
+		return;
 	}
+
+	store_t chunk_base = getPrintBase();
+	int chunk_digits = static_cast<int>( log10(static_cast<long double>(chunk_base) ) );
+
+	std::string buffer;
+	std::vector<const std::string> chunksVector;
+	
+	UnsignedBigInt this_copy(*this);
+	UnsignedBigInt chunk;
+
+	DivisionResult result;
+
+	while ( this_copy > 0 ) {
+		this_copy.divide(chunk_base, result);
+		chunk = *(result.remainder);
+		this_copy = *(result.quotient);
+		buffer = std::to_string(static_cast<unsigned long long>(chunk.mDigits[0]));
+		BigIntUtilities::leftPadChunk(buffer, chunk_digits);
+		chunksVector.insert(chunksVector.begin(), std::string(buffer));
+		delete(result.quotient);
+		delete(result.remainder);
+	}
+
+	buffer = chunksVector.front();
+	BigIntUtilities::trimLeadingZeros(buffer);
+	os << buffer;
+
+	for(digits_size_t i=1; i<chunksVector.size(); i++) {
+		os << chunksVector[i];
+	}
+
 }
 
 std::string UnsignedBigInt::toString() const {
@@ -372,14 +384,18 @@ std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit) {
 #pragma region Protected Methods
 
 calc_t UnsignedBigInt::initializeBase() {
-	// Get largest power of ten that fits store_t + 1.
-	// \see Readme.txt if you wonder why
-	calc_t max_base = static_cast<calc_t>(std::numeric_limits<store_t>::max()) + 1;
-	calc_t base = 1;
-	while (base < max_base)
-		base *= 10;
-	return base / 10;
+	return static_cast<calc_t>(std::numeric_limits<store_t>::max());
+}
 
+const store_t UnsignedBigInt::getPrintBase() const {
+	// largest power of ten that fits store_t
+	calc_t max_value = mBase - 1;
+	calc_t base = 1, prev_base = 1;
+	while (base >= prev_base && base < max_value) {
+		prev_base = base;
+		base *= 10;
+	}
+	return static_cast<store_t>(prev_base);
 }
 
 void UnsignedBigInt::trimLeadingZeros() {
@@ -390,12 +406,32 @@ void UnsignedBigInt::trimLeadingZeros() {
 	}
 }
 
-UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionResult iResultMode) {
-	
+const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const {
+	UnsignedBigInt tmpUnsignedBigInt = UnsignedBigInt(*this);
+	digits_size_t size = tmpUnsignedBigInt.mDigits.size();
+	calc_t multiplier, current_digit, tmp, carry;
+	multiplier = multiplier = static_cast<calc_t>(iMultiplier);
+	carry = 0;
+	for ( digits_size_t i = 0; i < size; i++ ) {
+		// promote both to calc_t
+		current_digit = static_cast<calc_t>(tmpUnsignedBigInt.mDigits[size - 1 - i]);
+		tmp = current_digit * multiplier + carry;
+		carry = tmp / mBase;
+		tmpUnsignedBigInt.mDigits[size - 1 - i] = static_cast<store_t>(tmp % mBase);
+	}
+	if (carry)
+		tmpUnsignedBigInt.mDigits.insert(tmpUnsignedBigInt.mDigits.begin(), carry);
+	return tmpUnsignedBigInt;
+}
+
+void UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionResult &oDivisionResult) {
+
 	if (iDivisor == 0)
 		throw DivideByZeroException();
 
-	UnsignedBigInt subdividend, subremainder, quotient, product;
+	UnsignedBigInt subdividend, product;
+	UnsignedBigInt *subremainder = new UnsignedBigInt();
+	UnsignedBigInt *quotient = new UnsignedBigInt();
 	digits_size_t n, dividend_size;
 	store_t multiplier;
 	bool first_round = true;
@@ -415,48 +451,61 @@ UnsignedBigInt& UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionR
 	mDigits = std::vector<store_t>(mDigits.begin() + (n-1), mDigits.end());
 		
 	// find out how many times divisor fits into subdividend
-	multiplier = getMultiplier(iDivisor, subdividend);
-	subremainder = subdividend - iDivisor * static_cast<store_t>(multiplier);
-	quotient.mDigits.push_back(multiplier);
+	multiplier = guessMultiplier(iDivisor, subdividend);
+	subdividend -= iDivisor * multiplier;
+	subremainder->mDigits = subdividend.mDigits;
+	quotient->mDigits.push_back(multiplier);
 
 	while ( mDigits.size() > 0 ) {
-		subdividend = subremainder * mBase + mDigits.front();
+		subdividend = *subremainder * mBase + mDigits.front();
 		mDigits.erase(mDigits.begin());
-		multiplier = getMultiplier(iDivisor, subdividend);
-		subremainder = subdividend - iDivisor * static_cast<store_t>(multiplier);
-		quotient.mDigits.push_back(multiplier);
+		multiplier = guessMultiplier(iDivisor, subdividend);
+		subdividend -= iDivisor * multiplier;
+		subremainder->mDigits = subdividend.mDigits;
+		quotient->mDigits.push_back(multiplier);
 	}
 
-	iResultMode == QUOTIENT ? mDigits = quotient.mDigits : mDigits = subremainder.mDigits;
-	
-	trimLeadingZeros();
+	quotient->trimLeadingZeros();
 
+	oDivisionResult.quotient = quotient;
+	oDivisionResult.remainder = subremainder;
+
+}
+
+UnsignedBigInt& UnsignedBigInt::quotient(const UnsignedBigInt &iThat) {
+	DivisionResult result;
+	divide(iThat, result);
+	*this = *(result.quotient);
 	return *this;
 }
 
-store_t UnsignedBigInt::getMultiplier(const UnsignedBigInt& iDivisor, const UnsignedBigInt& iDividend) {
+UnsignedBigInt& UnsignedBigInt::remainder(const UnsignedBigInt &iThat) {
+	DivisionResult result;
+	divide(iThat, result);
+	*this = *(result.remainder);
+	return *this;
+}
+
+store_t UnsignedBigInt::guessMultiplier(const UnsignedBigInt& iDivisor, const UnsignedBigInt& iDividend) {
 
 	store_t min = 0;
 	store_t max = std::numeric_limits<store_t>::max();
 	store_t j;
+	UnsignedBigInt tmp;
 
 	while (max - min > 1 ) {
 		j = static_cast<store_t>( ( static_cast<calc_t>(max) + static_cast<calc_t>(min) ) / 2 );
-		if (iDivisor * j == iDividend) {
+		tmp = iDivisor * j;
+		if (tmp == iDividend) {
 			return j;
-		}
-		if (iDivisor * j < iDividend) {
+		} else if (tmp < iDividend) {
 			min = j;
-		}
-		if (iDivisor * j > iDividend) {
+		} else if (tmp > iDividend) {
 			max = j;
 		}
 	}
 
-	j = max;
-	if (iDivisor * j > iDividend)
-		j--;
-	return j;
+	return iDivisor * max > iDividend ? min : max;
 }
 
 #pragma endregion

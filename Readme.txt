@@ -41,13 +41,26 @@ the high bit at any time.
 On the other side, conversion to base 10 will be necessary when displaying
 to get a human readable representation.
 
-I found an interesting compromise between SPEED - SPACE - READABILITY is using
-the largest power of ten that fits into the chosen store type. It saves a lot of
-space and gives a huge performance boost compared to decimal representation and
-saves us having to bother for conversions. Debugging is also a lot easier.
+I started developing the library using as base the largest power of ten that
+fits into the chosen store type. It saved a lot of memory and gave a huge
+performance boost compared to decimal representation.
+It also saved me having to bother for conversions and debugging has been a
+lot easier too.
 
-The tradeoff is on bitwise/shift operators: they have worse performance and slightly
-more complex implementation.
+The tradeoff of this choice manifested on bitwise/shift operators: any of this
+operations could have caused an overflow on my pseudo-decimal base, forcing me
+to check for this on operations that with a binary base would have been trivial.
+
+Additionally an internal representation of that kind could be counterintuitive
+for bitwise operations: bit juggling is usually performed on unsigned ints,
+what's the meaning of performing bitwise `not` on a BigInt in which each digit
+is an unsigned int < 10^n?
+
+Considering that when I implemented bit shifting operators I already had the basic
+arithmetic up and running, it was no problem at all implementing toString(), so
+I switched back to 2^32 base and implemented shifting / bitwise the fast way.
+
+Pseudo decimal representation mode could be still useful for debugging.
 
 [1] "The Algorithm Design Manual" Skiena S. pag. 423
 [2] My question on SO on how to pick the correct digit size:
@@ -67,6 +80,11 @@ For division I had to implement a binary search when looking for how many times
 divisor fits into dividend, this way I achieved decent performances for the
 purpose of this project.
 
+I internally implemented division with a method that returns both quotient and
+remainder. For decimal string representation both are needed and that saved lot
+of computations. A public method that expose such an interface could be useful
+too.
+
 For exponentation I used exponentation by squaring method:
 http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
@@ -76,16 +94,25 @@ http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
 IMPLEMENTATION NOTES
 
+-- Remainder Sign --
+
 The sign of % operator has been implemented as in the C++11 specification,
 the same as dividend. http://en.wikipedia.org/wiki/Modulo_operation
 
-Shift operators have been implemented as "arithmetic" shifts, simply stating
-that a << b = a * 2^b . The standard discourages the use of shift with
-signed integer types, because the result is implementation dependent. In this
-implementation I preserve the sign and work as expected on number's magnitude.
+-- Shift operators --
+
+Shift operators have been implemented as "arithmetic" shifts:
+a << b = a * 2^b
+a >> b = a / 2^b
+
+The standard discourages the use of shift with signed integer types, because
+the result is implementation dependent. In this implementation I preserve the
+sign and work as expected on number's magnitude.
 
 Shifting by a negative value is undefined behaviour in the standard, I throw an
-exception when it happens.
+exception when that is tried.
+
+-- Bitwise operators --
 
 Other bitwise operators are implemented as plain "logical" operators: I perform
 those digit to digit. If one operand is smaller in digits than the other, its
@@ -96,7 +123,7 @@ account: "+" is a true value, "-" a false one.
 
 KNOWN BUGS
 
-I must have used some uninitiliazed variable somewhere :/
-All works in Debug mode but when compiling in Release I get undefined behaviour.
+I must have used an uninitiliazed variable somewhere: compiling in Release
+occasionally gives undefined behaviour.
 
 ===============================================================================

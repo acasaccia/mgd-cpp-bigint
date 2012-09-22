@@ -14,5 +14,6 @@
 
 namespace BigIntUtilities {
 	void trimLeadingZeros(std::string& ioString);
+	void leftPadChunk(std::string& ioString, const unsigned int size);
 	void removeWhitespaces(std::string& ioString);
 }
