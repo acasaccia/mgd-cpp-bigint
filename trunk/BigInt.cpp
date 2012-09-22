@@ -198,13 +198,13 @@ BigInt BigInt::operator--(int) {
 #pragma region Shift operators
 
 BigInt& BigInt::operator<<=(const int iPlaces) {
-	// preserve the sign and work as expected on number's magnitude
+	// preserve the sign and forward to UnsignedBigInt for magnitude
 	mMagnitude <<= iPlaces;
 	return *this;
 }
 
 BigInt& BigInt::operator>>=(const int iPlaces) {
-	// preserve the sign and work as expected on number's magnitude
+	// preserve the sign and forward to UnsignedBigInt for magnitude
 	mMagnitude >>= iPlaces;
 	return *this;
 }

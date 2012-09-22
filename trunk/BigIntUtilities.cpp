@@ -12,6 +12,11 @@ namespace BigIntUtilities {
 		else
 			ioString = ioString.substr(beginStr);
 	}
+	
+	void leftPadChunk(std::string& ioString, const unsigned int size)
+	{
+		ioString.insert(ioString.begin(), size - ioString.size(), '0');
+	}
 
 	void removeWhitespaces(std::string& ioString)
 	{

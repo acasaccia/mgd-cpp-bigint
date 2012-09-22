@@ -316,18 +316,18 @@ namespace {
 
 		ASSERT_STREQ("2117667399768367790914905597950625", (c).toString().c_str());
 
-		a = UnsignedBigInt("214124124431412132545");
-		b = UnsignedBigInt("1840");
-		c= pow(a,b); // lol, 36,5Kb. We do what we must because we can!
+		//a = UnsignedBigInt("214124124431412132545");
+		//b = UnsignedBigInt("1840");
+		//c= pow(a,b); // lol, 36,5Kb. We do what we must because we can!
 
-		std::ifstream t("..\\214124124431412132545^1840.txt");
-		std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+		//std::ifstream t("..\\214124124431412132545^1840.txt");
+		//std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-		// if this fails it probably means the file with the result hasn't been loaded properly
-		ASSERT_TRUE(str.size()>0);
+		//// if this fails it probably means the file with the result hasn't been loaded properly
+		//ASSERT_TRUE(str.size()>0);
 
-		// using strcmp here because gtest fixture buffer seems not large enough to compare these
-		ASSERT_EQ(std::strcmp(str.c_str(), c.toString().c_str()), 0);
+		//// using strcmp here because gtest fixture buffer seems not large enough to compare these
+		//ASSERT_EQ(std::strcmp(str.c_str(), c.toString().c_str()), 0);
 
 	}
 
@@ -335,7 +335,7 @@ namespace {
 
 	#pragma region Summary
 
-	TEST_F(UnsignedBigIntTest, ArithmeticSummary) {
+	TEST_F(UnsignedBigIntTest, Summary) {
 
 		UnsignedBigInt a, b;
 
