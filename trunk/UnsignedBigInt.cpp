@@ -403,7 +403,7 @@ std::string UnsignedBigInt::toString() const {
 }
 
 std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit) {
-	std::vector<bool> ret;
+	std::vector<bool> ret = std::vector<bool>();
 	while(iDigit) {
 		if (iDigit&1)
 			ret.push_back(1);
@@ -571,7 +571,7 @@ std::ostream& operator<<( std::ostream& os, const UnsignedBigInt& iUnsignedBigIn
 
 std::istream& operator>>( std::istream& is, UnsignedBigInt& iUnsignedBigInt ) {
 	// read obj from stream
-	std::string tmp;
+	std::string tmp = "";
 	is >> tmp;
 	try {
 		iUnsignedBigInt = UnsignedBigInt(tmp);
