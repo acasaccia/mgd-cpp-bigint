@@ -372,7 +372,7 @@ void UnsignedBigInt::print(std::ostream& os) const {
 	UnsignedBigInt this_copy(*this);
 	UnsignedBigInt chunk;
 
-	DivisionResult result;
+	DivisionResult result = DivisionResult();
 
 	while ( this_copy > 0 ) {
 		this_copy.divide(chunk_base, result);
@@ -525,14 +525,14 @@ void UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionResult &oDiv
 }
 
 UnsignedBigInt& UnsignedBigInt::quotient(const UnsignedBigInt &iThat) {
-	DivisionResult result;
+	DivisionResult result = DivisionResult();
 	divide(iThat, result);
 	*this = *(result.quotient);
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::remainder(const UnsignedBigInt &iThat) {
-	DivisionResult result;
+	DivisionResult result = DivisionResult();
 	divide(iThat, result);
 	*this = *(result.remainder);
 	return *this;
