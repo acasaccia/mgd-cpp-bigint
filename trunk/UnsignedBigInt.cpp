@@ -33,6 +33,7 @@ UnsignedBigInt::UnsignedBigInt(const short iSignedInteger) { constructFromSigned
 
 UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
+	// optional whitespaces - mandatory [0-9] digits - optional whitespaces
 	std::regex integer_with_whitespaces("^[\\s]*[0-9]+[\\s]*$");
 
 	if ( !std::regex_match( iString, integer_with_whitespaces ) )
@@ -55,13 +56,13 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 	char digit_char;
 
 	for ( std::string::size_type i = 0; i != cleanString.size(); ++i ) {
-		digit_char = cleanString[i];
+		digit_char = cleanString.at(i);
 		carry = static_cast<calc_t>(atoi(&digit_char));
 
 		for ( digits_size_t j = mDigits.size(); j --> 0 ;) {
-			digit = static_cast<calc_t>(mDigits[j]);
+			digit = static_cast<calc_t>(mDigits.at(j));
 			sum = digit * 10 + carry;
-			mDigits[j] = static_cast<store_t>(sum % mBase);
+			mDigits.at(j) = static_cast<store_t>(sum % mBase);
 			carry = static_cast<store_t>(sum / mBase);
 		}
 
@@ -95,14 +96,14 @@ UnsignedBigInt& UnsignedBigInt::operator+=(const UnsignedBigInt &iThat) {
 	for ( digits_size_t i = 0; i < this_size; i++ ) {
 		// promote both digits from store_t to calc_t
 		// if we got no more digits we set them to 0
-		this_digit = static_cast<calc_t>(mDigits[this_size - 1 - i]);
-		that_digit = (that_size - 1 - i) > that_size ? 0 : static_cast<calc_t>(iThat.mDigits[that_size - 1 - i]);
+		this_digit = static_cast<calc_t>(mDigits.at(this_size - 1 - i));
+		that_digit = (that_size - 1 - i) > that_size ? 0 : static_cast<calc_t>(iThat.mDigits.at(that_size - 1 - i));
 		// perform addition
 		sum = this_digit + that_digit + carry;
 		// check for overflow
 		carry = static_cast<calc_t>(sum > mBase);
 		// convert back to store_t and store result
-		mDigits[this_size - 1 - i] = static_cast<store_t>(sum % mBase);
+		mDigits.at(this_size - 1 - i) = static_cast<store_t>(sum % mBase);
 	}
 
 	if (carry)
@@ -124,23 +125,18 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 	digits_size_t this_size = mDigits.size();
 	digits_size_t that_size = iThat.mDigits.size();
 
-	if ( this_size < that_size ) {
-		mDigits.resize( that_size, 0 );
-		this_size = that_size;
-	}
-
 	for ( digits_size_t i = 0; i < this_size; i++ ) {
 		// promote both digits from store_t to calc_t
 		// if we got no more digits we set them to 0
-		this_digit = static_cast<calc_t>(mDigits[this_size - 1 - i]);
-		that_digit = (that_size - 1 - i) > that_size ? 0 : static_cast<calc_t>(iThat.mDigits[that_size - 1 - i]);
+		this_digit = static_cast<calc_t>(mDigits.at(this_size - 1 - i));
+		that_digit = (that_size - 1 - i) > that_size ? 0 : static_cast<calc_t>(iThat.mDigits.at(that_size - 1 - i));
 		this_digit -= borrow;
 		// check if we need borrow
 		borrow = static_cast<calc_t>(this_digit < that_digit);
 		// perform subtraction
 		difference = this_digit - that_digit + borrow * mBase;
 		// convert back to store_t and store result
-		mDigits[this_size - 1 - i] = static_cast<store_t>(difference);
+		mDigits.at(this_size - 1 - i) = static_cast<store_t>(difference);
 	}
 	trimLeadingZeros();
 	return *this;
@@ -151,7 +147,7 @@ UnsignedBigInt& UnsignedBigInt::operator*=(const UnsignedBigInt &iThat) {
 	store_t multiplier;
 	digits_size_t that_size = iThat.mDigits.size();
 	for ( digits_size_t i = 0; i < that_size; i++ ) {
-		multiplier = static_cast<store_t>(iThat.mDigits[that_size - 1 - i]);
+		multiplier = static_cast<store_t>(iThat.mDigits.at(that_size - 1 - i));
 		partial = this->multiplyByDigit(multiplier);
 		for (digits_size_t c = 0; c < i; c++) {
 			partial.mDigits.push_back(0); // shift left by i column
@@ -205,7 +201,7 @@ bool UnsignedBigInt::operator==(const UnsignedBigInt &iThat) const {
 	if ( this_size != iThat.mDigits.size() )
 		return false;
 	for (digits_size_t i = 0; i < this_size; i++ ) {
-		if (mDigits[i] != iThat.mDigits[i])
+		if (mDigits.at(i) != iThat.mDigits.at(i))
 			return false;
 	}
 	return true;
@@ -221,8 +217,8 @@ bool UnsignedBigInt::operator<(const UnsignedBigInt &iThat) const {
 	if ( this_size != that_size )
 		return this_size < that_size;
 	for (digits_size_t i = 0; i < this_size; i++ ) {
-		if (mDigits[i] != iThat.mDigits[i])
-			return mDigits[i] < iThat.mDigits[i];
+		if (mDigits.at(i) != iThat.mDigits.at(i))
+			return mDigits.at(i) < iThat.mDigits.at(i);
 	}
 	return false;
 }
@@ -299,7 +295,7 @@ UnsignedBigInt& UnsignedBigInt::operator&=(const UnsignedBigInt &iThat) {
 	if (this_size > that_size)
 		mDigits.erase(mDigits.begin(), mDigits.begin() + this_size - that_size);
 	for(digits_size_t c=0; c<mDigits.size(); c++)
-		mDigits[c] &= iThat.mDigits[c];
+		mDigits.at(c) &= iThat.mDigits.at(c);
 	trimLeadingZeros();
 	return *this;
 }
@@ -310,7 +306,7 @@ UnsignedBigInt& UnsignedBigInt::operator|=(const UnsignedBigInt &iThat) {
 	if (this_size < that_size)
 		mDigits.insert(mDigits.begin(), that_size - this_size);
 	for(digits_size_t c=0; c<mDigits.size(); c++)
-		mDigits[c] |= iThat.mDigits[c];
+		mDigits.at(c) |= iThat.mDigits.at(c);
 	trimLeadingZeros();
 	return *this;
 }
@@ -321,7 +317,7 @@ UnsignedBigInt& UnsignedBigInt::operator^=(const UnsignedBigInt &iThat) {
 	if (this_size < that_size)
 		mDigits.insert(mDigits.begin(), that_size - this_size);
 	for(digits_size_t c=0; c<mDigits.size(); c++)
-		mDigits[c] ^= iThat.mDigits[c];
+		mDigits.at(c) ^= iThat.mDigits.at(c);
 	trimLeadingZeros();
 	return *this;
 }
@@ -341,7 +337,7 @@ const UnsignedBigInt UnsignedBigInt::operator^(const UnsignedBigInt &iThat) cons
 const UnsignedBigInt UnsignedBigInt::operator~() const {
 	UnsignedBigInt result(*this);
 	for(digits_size_t c=0; c<result.mDigits.size(); c++)
-		result.mDigits[c] = ~result.mDigits[c];
+		result.mDigits.at(c) = ~result.mDigits.at(c);
 	result.trimLeadingZeros();
 	return result;
 }
@@ -357,7 +353,7 @@ void UnsignedBigInt::print(std::ostream& os) const {
 	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
     os << mDigits.front(); // no padding for most significant digit
     for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
-            os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits[i];
+            os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits.at(i);
     }
 
 #else
@@ -382,7 +378,7 @@ void UnsignedBigInt::print(std::ostream& os) const {
 		this_copy.divide(chunk_base, result);
 		chunk = *(result.remainder);
 		this_copy = *(result.quotient);
-		buffer = std::to_string(static_cast<unsigned long long>(chunk.mDigits[0]));
+		buffer = std::to_string(static_cast<unsigned long long>(chunk.mDigits.front()));
 		BigIntUtilities::leftPadChunk(buffer, chunk_digits);
 		chunksVector.insert(chunksVector.begin(), std::string(buffer));
 	}
@@ -392,7 +388,7 @@ void UnsignedBigInt::print(std::ostream& os) const {
 	os << buffer;
 
 	for(digits_size_t i=1; i<chunksVector.size(); i++) {
-		os << chunksVector[i];
+		os << chunksVector.at(i);
 	}
 
 #endif
@@ -470,10 +466,10 @@ const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier)
 	carry = 0;
 	for ( digits_size_t i = 0; i < size; i++ ) {
 		// promote both to calc_t
-		current_digit = static_cast<calc_t>(tmpUnsignedBigInt.mDigits[size - 1 - i]);
+		current_digit = static_cast<calc_t>(tmpUnsignedBigInt.mDigits.at(size - 1 - i));
 		tmp = current_digit * multiplier + carry;
 		carry = tmp / mBase;
-		tmpUnsignedBigInt.mDigits[size - 1 - i] = static_cast<store_t>(tmp % mBase);
+		tmpUnsignedBigInt.mDigits.at(size - 1 - i) = static_cast<store_t>(tmp % mBase);
 	}
 	if (carry)
 		tmpUnsignedBigInt.mDigits.insert(tmpUnsignedBigInt.mDigits.begin(), carry);
@@ -590,10 +586,10 @@ UnsignedBigInt pow(const UnsignedBigInt& iBase, const UnsignedBigInt& iExponent)
 	UnsignedBigInt result = 1;
 	std::vector<bool> binaryDigit;
 	for (digits_size_t i=0; i<iExponent.mDigits.size(); i++) {
-		binaryDigit = UnsignedBigInt::digitToBinary(iExponent.mDigits[i]);
+		binaryDigit = UnsignedBigInt::digitToBinary(iExponent.mDigits.at(i));
 		for (unsigned short j=0; j<binaryDigit.size(); j++) {
 			result *= result;
-			if (binaryDigit[j])
+			if (binaryDigit.at(j))
 				result *= iBase;
 		}
 	}
