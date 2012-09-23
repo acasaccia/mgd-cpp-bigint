@@ -300,6 +300,7 @@ UnsignedBigInt& UnsignedBigInt::operator&=(const UnsignedBigInt &iThat) {
 		mDigits.erase(mDigits.begin(), mDigits.begin() + this_size - that_size);
 	for(digits_size_t c=0; c<mDigits.size(); c++)
 		mDigits[c] &= iThat.mDigits[c];
+	trimLeadingZeros();
 	return *this;
 }
 
@@ -310,6 +311,7 @@ UnsignedBigInt& UnsignedBigInt::operator|=(const UnsignedBigInt &iThat) {
 		mDigits.insert(mDigits.begin(), that_size - this_size);
 	for(digits_size_t c=0; c<mDigits.size(); c++)
 		mDigits[c] |= iThat.mDigits[c];
+	trimLeadingZeros();
 	return *this;
 }
 
@@ -320,6 +322,7 @@ UnsignedBigInt& UnsignedBigInt::operator^=(const UnsignedBigInt &iThat) {
 		mDigits.insert(mDigits.begin(), that_size - this_size);
 	for(digits_size_t c=0; c<mDigits.size(); c++)
 		mDigits[c] ^= iThat.mDigits[c];
+	trimLeadingZeros();
 	return *this;
 }
 
@@ -339,6 +342,7 @@ const UnsignedBigInt UnsignedBigInt::operator~() const {
 	UnsignedBigInt result(*this);
 	for(digits_size_t c=0; c<result.mDigits.size(); c++)
 		result.mDigits[c] = ~result.mDigits[c];
+	result.trimLeadingZeros();
 	return result;
 }
 

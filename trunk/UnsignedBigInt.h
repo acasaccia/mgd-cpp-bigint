@@ -1,5 +1,5 @@
 /*! 
- *  BigInt - represents an unsigned arbitrary precision integer
+ *  UnsignedBigInt - represents an unsigned arbitrary precision integer
  *  -
  *  BigInt Homework - Advanced cpp programming
  *  Master in Computer Game Development, Verona, Italy
@@ -10,9 +10,8 @@
 
 #pragma once
 
-// Uncomment the following to use the largest power of 10 that fits store_t as the base for
-// internal representation.
-
+// Uncomment the following to use the largest power of 10 that fits store_t
+// as base for internal representation.
 #define BIGINT_PSEUDO_DECIMAL_BASE true
 
 #include <vector>

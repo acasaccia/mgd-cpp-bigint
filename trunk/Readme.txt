@@ -41,14 +41,23 @@ the high bit at any time.
 On the other side, conversion to base 10 will be necessary when displaying
 to get a human readable representation.
 
-I started developing the library using the largest power of ten that fitted
-into the chosen store type as base. That saved memory and gave a performance
-boost compared to decimal representation. It saved me having to bother
-for conversions, but most important, being the internal representation human
-readable debugging has been a lot easier.
+I started developing the library using as base for the internal representation
+the largest power of ten that fitted into the chosen store type (i will call
+it "pseudo-decimal" base). That saved memory and gave a performance boost
+compared to decimal representation. It saved me having to bother for conversions,
+but most important, being the internal representation human readable debugging
+has been a lot easier.
 
-When I had the basic arithmetic up and running, it was no problem implementing
-conversion to a human readable base, so I switched to an internal 2^32 base.
+When I had the basic arithmetic up and running, I implemented an algorithm for
+conversion to a human readable base, so could switch to an internal 2^32
+(pseudo-binary) base.
+
+At the moment, default for the library is to use pseudo-decimal base, which
+performs better due to the poor implementation of the toString() algorithm for
+different bases (or of divide() on which it heavily relies).
+
+I put a #define on top of UnsignedBigInt.h which can be commented to use
+pseudo-binary base.
 
 [1] "The Algorithm Design Manual" Skiena S. pag. 423
 [2] My question on SO on how to pick the correct digit size:
@@ -98,7 +107,7 @@ the result is implementation dependent. In this implementation I preserve the
 sign and work as expected on number's magnitude.
 
 Shifting by a negative value is undefined behaviour in the standard, I throw an
-exception when that is tried.
+exception when it is tried.
 
 -- Bitwise operators --
 
