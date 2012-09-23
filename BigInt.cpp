@@ -32,6 +32,7 @@ BigInt::BigInt(const short iSignedInteger) { constructFromSignedInteger(iSignedI
 
 BigInt::BigInt(const std::string &iString) {
 	
+	// optional whitespaces - optional (+/-) sign - optional whitespaces - mandatory [0-9] digits - optional whitespaces
 	std::regex signed_integer_with_whitespaces("^[\\s]*[+-]?[\\s]*[0-9]+[\\s]*$");
 
 	if ( !std::regex_match( iString, signed_integer_with_whitespaces ) )
@@ -315,10 +316,10 @@ BigInt pow(const BigInt& iBase, const UnsignedBigInt& iExponent) {
 	BigInt result = 1;
 	std::vector<bool> binaryDigit;
 	for (digits_size_t i=0; i<iExponent.mDigits.size(); i++) {
-		binaryDigit = BigInt::digitToBinary(iExponent.mDigits[i]);
+		binaryDigit = BigInt::digitToBinary(iExponent.mDigits.at(i));
 		for (unsigned short j=0; j<binaryDigit.size(); j++) {
 			result.mMagnitude *= result.mMagnitude;
-			if (binaryDigit[j])
+			if (binaryDigit.at(j))
 				result.mMagnitude *= iBase.mMagnitude;
 		}
 	}
