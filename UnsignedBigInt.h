@@ -10,6 +10,11 @@
 
 #pragma once
 
+// Uncomment the following to use the largest power of 10 that fits store_t as the base for
+// internal representation.
+
+#define BIGINT_PSEUDO_DECIMAL_BASE true
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -18,6 +23,8 @@
 #include "Types.h"
 #include "Exceptions.h"
 #include "BigIntUtilities.h"
+
+struct DivisionResult;
 
 class UnsignedBigInt {
 public:
@@ -150,6 +157,27 @@ protected:
 	}
 
 	#pragma endregion
+
+};
+
+struct DivisionResult {
+
+	UnsignedBigInt *quotient, *remainder;
+
+	DivisionResult() {
+		quotient = NULL;
+		remainder = NULL;
+	}
+
+	DivisionResult(UnsignedBigInt* iQuotient, UnsignedBigInt* iRemainder) {
+		quotient = iQuotient;
+		remainder = iRemainder;
+	}
+
+	~DivisionResult() {
+		delete(quotient);
+		delete(remainder);
+	}
 
 };
 

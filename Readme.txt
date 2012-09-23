@@ -41,26 +41,14 @@ the high bit at any time.
 On the other side, conversion to base 10 will be necessary when displaying
 to get a human readable representation.
 
-I started developing the library using as base the largest power of ten that
-fits into the chosen store type. It saved a lot of memory and gave a huge
-performance boost compared to decimal representation.
-It also saved me having to bother for conversions and debugging has been a
-lot easier too.
+I started developing the library using the largest power of ten that fitted
+into the chosen store type as base. That saved memory and gave a performance
+boost compared to decimal representation. It saved me having to bother
+for conversions, but most important, being the internal representation human
+readable debugging has been a lot easier.
 
-The tradeoff of this choice manifested on bitwise/shift operators: any of this
-operations could have caused an overflow on my pseudo-decimal base, forcing me
-to check for this on operations that with a binary base would have been trivial.
-
-Additionally an internal representation of that kind could be counterintuitive
-for bitwise operations: bit juggling is usually performed on unsigned ints,
-what's the meaning of performing bitwise `not` on a BigInt in which each digit
-is an unsigned int < 10^n?
-
-Considering that when I implemented bit shifting operators I already had the basic
-arithmetic up and running, it was no problem at all implementing toString(), so
-I switched back to 2^32 base and implemented shifting / bitwise the fast way.
-
-Pseudo decimal representation mode could be still useful for debugging.
+When I had the basic arithmetic up and running, it was no problem implementing
+conversion to a human readable base, so I switched to an internal 2^32 base.
 
 [1] "The Algorithm Design Manual" Skiena S. pag. 423
 [2] My question on SO on how to pick the correct digit size:

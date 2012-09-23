@@ -27,3 +27,7 @@ class InvalidSubtractionException : public std::exception {
 class DivideByZeroException : public std::exception {
 	const char* what() const { return "Tried to perform division by zero.";	}
 };
+
+class NegativeShiftException : public std::exception {
+	const char* what() const { return "Tried to perform shift by a negative amount.";	}
+};

@@ -289,11 +289,18 @@ namespace {
 		int places = 23;
 		UnsignedBigInt a, b;
 		b = pow(UnsignedBigInt(2), UnsignedBigInt(places));
-
 		a = UnsignedBigInt("83164513654178581346831");
 		ASSERT_STREQ((a * b).toString().c_str(), (a << places).toString().c_str());
 		ASSERT_STREQ((a / b).toString().c_str(), (a >> places).toString().c_str());
 
+		places = 56;
+		b = pow(UnsignedBigInt(2), UnsignedBigInt(places));
+		a = UnsignedBigInt("83164513654178581346831");
+		ASSERT_STREQ((a * b).toString().c_str(), (a << places).toString().c_str());
+		ASSERT_STREQ((a / b).toString().c_str(), (a >> places).toString().c_str());
+
+		places = -121;
+		ASSERT_THROW((a >> places).toString().c_str(), NegativeShiftException);
 	}
 	
 	#pragma endregion
@@ -316,18 +323,22 @@ namespace {
 
 		ASSERT_STREQ("2117667399768367790914905597950625", (c).toString().c_str());
 
-		//a = UnsignedBigInt("214124124431412132545");
-		//b = UnsignedBigInt("1840");
-		//c= pow(a,b); // lol, 36,5Kb. We do what we must because we can!
+#ifdef BIGINT_PSEUDO_DECIMAL_BASE
 
-		//std::ifstream t("..\\214124124431412132545^1840.txt");
-		//std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+		a = UnsignedBigInt("214124124431412132545");
+		b = UnsignedBigInt("1840");
+		c= pow(a,b); // lol, 36,5Kb. We do what we must because we can!
 
-		//// if this fails it probably means the file with the result hasn't been loaded properly
-		//ASSERT_TRUE(str.size()>0);
+		std::ifstream t("..\\214124124431412132545^1840.txt");
+		std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-		//// using strcmp here because gtest fixture buffer seems not large enough to compare these
-		//ASSERT_EQ(std::strcmp(str.c_str(), c.toString().c_str()), 0);
+		// if this fails it probably means the file with the result hasn't been loaded properly
+		ASSERT_TRUE(str.size()>0);
+
+		// using strcmp here because gtest fixture buffer seems not large enough to compare these
+		ASSERT_EQ(std::strcmp(str.c_str(), c.toString().c_str()), 0);
+
+#endif
 
 	}
 

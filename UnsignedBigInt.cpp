@@ -9,6 +9,7 @@
  */
 
 #include "UnsignedBigInt.h"
+#include <iomanip>
 #include <sstream>
 #include <regex>
 
@@ -267,10 +268,14 @@ UnsignedBigInt UnsignedBigInt::operator--(int) {
 #pragma region Shift operators
 
 UnsignedBigInt& UnsignedBigInt::operator<<=(const int iPlaces) {
+	if ( iPlaces < 0 )
+		throw NegativeShiftException();
 	return *this *= pow( UnsignedBigInt(2), UnsignedBigInt(iPlaces) );
 }
 
 UnsignedBigInt& UnsignedBigInt::operator>>=(const int iPlaces) {
+	if ( iPlaces < 0 )
+		throw NegativeShiftException();
 	return *this /= pow( UnsignedBigInt(2), UnsignedBigInt(iPlaces) );
 }
 
@@ -289,14 +294,32 @@ const UnsignedBigInt UnsignedBigInt::operator>>(const int iPlaces) const {
 #pragma region Bitwise operators
 
 UnsignedBigInt& UnsignedBigInt::operator&=(const UnsignedBigInt &iThat) {
+	digits_size_t this_size = mDigits.size();
+	digits_size_t that_size = iThat.mDigits.size();
+	if (this_size > that_size)
+		mDigits.erase(mDigits.begin(), mDigits.begin() + this_size - that_size);
+	for(digits_size_t c=0; c<mDigits.size(); c++)
+		mDigits[c] &= iThat.mDigits[c];
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::operator|=(const UnsignedBigInt &iThat) {
+	digits_size_t this_size = mDigits.size();
+	digits_size_t that_size = iThat.mDigits.size();
+	if (this_size < that_size)
+		mDigits.insert(mDigits.begin(), that_size - this_size);
+	for(digits_size_t c=0; c<mDigits.size(); c++)
+		mDigits[c] |= iThat.mDigits[c];
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::operator^=(const UnsignedBigInt &iThat) {
+	digits_size_t this_size = mDigits.size();
+	digits_size_t that_size = iThat.mDigits.size();
+	if (this_size < that_size)
+		mDigits.insert(mDigits.begin(), that_size - this_size);
+	for(digits_size_t c=0; c<mDigits.size(); c++)
+		mDigits[c] ^= iThat.mDigits[c];
 	return *this;
 }
 
@@ -313,7 +336,10 @@ const UnsignedBigInt UnsignedBigInt::operator^(const UnsignedBigInt &iThat) cons
 }
 
 const UnsignedBigInt UnsignedBigInt::operator~() const {
-	return UnsignedBigInt(*this);
+	UnsignedBigInt result(*this);
+	for(digits_size_t c=0; c<result.mDigits.size(); c++)
+		result.mDigits[c] = ~result.mDigits[c];
+	return result;
 }
 
 #pragma endregion
@@ -321,6 +347,16 @@ const UnsignedBigInt UnsignedBigInt::operator~() const {
 #pragma region Public Methods
 
 void UnsignedBigInt::print(std::ostream& os) const {
+
+#ifdef BIGINT_PSEUDO_DECIMAL_BASE
+
+	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
+    os << mDigits.front(); // no padding for most significant digit
+    for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
+            os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits[i];
+    }
+
+#else
 
 	if (*this == 0) {
 		os << "0";
@@ -345,8 +381,6 @@ void UnsignedBigInt::print(std::ostream& os) const {
 		buffer = std::to_string(static_cast<unsigned long long>(chunk.mDigits[0]));
 		BigIntUtilities::leftPadChunk(buffer, chunk_digits);
 		chunksVector.insert(chunksVector.begin(), std::string(buffer));
-		delete(result.quotient);
-		delete(result.remainder);
 	}
 
 	buffer = chunksVector.front();
@@ -356,6 +390,8 @@ void UnsignedBigInt::print(std::ostream& os) const {
 	for(digits_size_t i=1; i<chunksVector.size(); i++) {
 		os << chunksVector[i];
 	}
+
+#endif
 
 }
 
@@ -384,7 +420,23 @@ std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit) {
 #pragma region Protected Methods
 
 calc_t UnsignedBigInt::initializeBase() {
+
+#ifdef BIGINT_PSEUDO_DECIMAL_BASE
+
+	calc_t max_value = static_cast<calc_t>(std::numeric_limits<store_t>::max());
+	calc_t base = 1, prev_base = 1;
+	while (base >= prev_base && base < max_value) {
+		prev_base = base;
+		base *= 10;
+	}
+	return static_cast<store_t>(prev_base);
+
+#else
+	
 	return static_cast<calc_t>(std::numeric_limits<store_t>::max());
+
+#endif
+	
 }
 
 const store_t UnsignedBigInt::getPrintBase() const {
