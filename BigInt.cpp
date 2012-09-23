@@ -278,7 +278,7 @@ std::string BigInt::toString() const {
 }
 
 std::vector<bool> BigInt::digitToBinary(store_t iDigit) {
-	std::vector<bool> ret;
+	std::vector<bool> ret = std::vector<bool>();
 	while(iDigit) {
 		if (iDigit&1)
 			ret.push_back(1);
@@ -301,7 +301,7 @@ std::ostream& operator<<( std::ostream& os, const BigInt& iBigInt ) {
 
 std::istream& operator>>( std::istream& is, BigInt& iBigInt ) {
 	// read obj from stream
-	std::string tmp;
+	std::string tmp = "";
 	is >> tmp;
 	try {
 		iBigInt = BigInt(tmp);
