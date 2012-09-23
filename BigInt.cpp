@@ -221,6 +221,47 @@ const BigInt BigInt::operator>>(const int iPlaces) const {
 
 #pragma endregion
 
+#pragma region Bitwise operators
+
+BigInt& BigInt::operator&=(const BigInt &iThat) {
+	mMagnitude &= iThat.mMagnitude;
+	mSign = ( mSign == POSITIVE && iThat.mSign == POSITIVE ) ? POSITIVE : NEGATIVE;
+	return *this;
+}
+
+BigInt& BigInt::operator|=(const BigInt &iThat) {
+	mMagnitude |= iThat.mMagnitude;
+	mSign = ( mSign == POSITIVE || iThat.mSign == POSITIVE ) ? POSITIVE : NEGATIVE;
+	return *this;
+}
+
+BigInt& BigInt::operator^=(const BigInt &iThat) {
+	mMagnitude ^= iThat.mMagnitude;
+	mSign = ( mSign != iThat.mSign ) ? POSITIVE : NEGATIVE;
+	return *this;
+}
+
+const BigInt BigInt::operator&(const BigInt &iThat) const {
+	return BigInt(*this) &= iThat;
+}
+
+const BigInt BigInt::operator|(const BigInt &iThat) const {
+	return BigInt(*this) |= iThat;
+}
+
+const BigInt BigInt::operator^(const BigInt &iThat) const {
+	return BigInt(*this) ^= iThat;
+}
+
+const BigInt BigInt::operator~() const {
+	BigInt result(*this);
+	result.mMagnitude = ~result.mMagnitude;
+	result.mSign = result.mSign == POSITIVE ? NEGATIVE : POSITIVE;
+	return result;
+}
+
+#pragma endregion
+
 #pragma region Public Methods
 
 void BigInt::print(std::ostream& os) const {
