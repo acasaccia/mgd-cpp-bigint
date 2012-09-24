@@ -18,7 +18,7 @@ const calc_t UnsignedBigInt::mBase = UnsignedBigInt::initializeBase();
 #pragma region Constructors
 
 UnsignedBigInt::UnsignedBigInt() {
-	mDigits = std::vector<store_t> ();
+	mDigits = std::vector<store_t>();
 	mDigits.push_back(0);
 }
 
@@ -79,8 +79,7 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 UnsignedBigInt& UnsignedBigInt::operator+=(const UnsignedBigInt &iThat) {
 
 	// Basic schoolhouse method
-	calc_t this_digit, that_digit, sum, carry;
-	carry = 0;
+	calc_t this_digit = 0, that_digit = 0, sum = 0, carry = 0;
 
 	digits_size_t this_size = mDigits.size();
 	digits_size_t that_size = iThat.mDigits.size();
@@ -119,8 +118,7 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 		throw InvalidSubtractionException();
 
 	// Basic schoolhouse method
-	calc_t this_digit, that_digit, difference, borrow;
-	borrow = 0;
+	calc_t this_digit = 0, that_digit = 0, difference = 0, borrow = 0;
 
 	digits_size_t this_size = mDigits.size();
 	digits_size_t that_size = iThat.mDigits.size();
@@ -138,14 +136,18 @@ UnsignedBigInt& UnsignedBigInt::operator-=(const UnsignedBigInt &iThat) {
 		// convert back to store_t and store result
 		mDigits.at(this_size - 1 - i) = static_cast<store_t>(difference);
 	}
+
 	trimLeadingZeros();
+
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::operator*=(const UnsignedBigInt &iThat) {
+
 	UnsignedBigInt partial, result = UnsignedBigInt();
 	store_t multiplier;
 	digits_size_t that_size = iThat.mDigits.size();
+
 	for ( digits_size_t i = 0; i < that_size; i++ ) {
 		multiplier = static_cast<store_t>(iThat.mDigits.at(that_size - 1 - i));
 		partial = this->multiplyByDigit(multiplier);
@@ -154,8 +156,11 @@ UnsignedBigInt& UnsignedBigInt::operator*=(const UnsignedBigInt &iThat) {
 		}
 		result += partial;
 	}
+
 	*this = result;
+
 	trimLeadingZeros();
+
 	return *this;
 }
 
@@ -396,10 +401,9 @@ void UnsignedBigInt::print(std::ostream& os) const {
 }
 
 std::string UnsignedBigInt::toString() const {
-	std::string returnString;
-	std::stringstream ss;
+	std::stringstream ss("", std::stringstream::in | std::stringstream::out);
     ss << *this;
-	return returnString = ss.str();
+	return ss.str();
 }
 
 std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit) {
@@ -459,11 +463,13 @@ void UnsignedBigInt::trimLeadingZeros() {
 }
 
 const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const {
+
 	UnsignedBigInt tmpUnsignedBigInt = UnsignedBigInt(*this);
+	
 	digits_size_t size = tmpUnsignedBigInt.mDigits.size();
-	calc_t multiplier, current_digit, tmp, carry;
-	multiplier = multiplier = static_cast<calc_t>(iMultiplier);
-	carry = 0;
+	calc_t multiplier = 0, current_digit = 0, tmp = 0, carry = 0;
+	multiplier = static_cast<calc_t>(iMultiplier);
+	
 	for ( digits_size_t i = 0; i < size; i++ ) {
 		// promote both to calc_t
 		current_digit = static_cast<calc_t>(tmpUnsignedBigInt.mDigits.at(size - 1 - i));
@@ -471,8 +477,10 @@ const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier)
 		carry = tmp / mBase;
 		tmpUnsignedBigInt.mDigits.at(size - 1 - i) = static_cast<store_t>(tmp % mBase);
 	}
+
 	if (carry)
 		tmpUnsignedBigInt.mDigits.insert(tmpUnsignedBigInt.mDigits.begin(), carry);
+
 	return tmpUnsignedBigInt;
 }
 
