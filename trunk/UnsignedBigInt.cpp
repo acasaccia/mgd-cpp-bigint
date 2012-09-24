@@ -481,17 +481,11 @@ void UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionResult &oDiv
 	if (iDivisor == 0)
 		throw DivideByZeroException();
 
-	UnsignedBigInt subdividend, product;
+	UnsignedBigInt subdividend = 0;
 	UnsignedBigInt *subremainder = new UnsignedBigInt();
 	UnsignedBigInt *quotient = new UnsignedBigInt();
-	digits_size_t n, dividend_size;
+	digits_size_t n = 1, dividend_size = mDigits.size();
 	store_t multiplier;
-	bool first_round = true;
-
-	n = 1;
-		
-	dividend_size = mDigits.size();
-	subdividend = 0;
 
 	// pick first n digits of dividend until subdividend > divisor
 	do {
