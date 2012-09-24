@@ -133,6 +133,7 @@ namespace {
 
 		c += 330;
 		ASSERT_STREQ("234992", c.toString().c_str());
+
 	}
 
 	#pragma endregion
@@ -165,6 +166,7 @@ namespace {
 		b = UnsignedBigInt("747214317243172437126");
 		c = a - b;
 		ASSERT_STREQ("0", c.toString().c_str());
+
 	}
 
 	#pragma endregion
@@ -301,6 +303,7 @@ namespace {
 
 		places = -121;
 		ASSERT_THROW((a >> places).toString().c_str(), NegativeShiftException);
+
 	}
 	
 	#pragma endregion
@@ -428,6 +431,7 @@ namespace {
 		ASSERT_STREQ("184518345183764381746", out.str().c_str());
 		ss >> a;
 		ASSERT_TRUE(ss.fail());
+
 	}
 
 	#pragma endregion
@@ -546,6 +550,7 @@ namespace {
 		b = BigInt("-747214317243172437126");
 		c = a + b;
 		ASSERT_STREQ("0", c.toString().c_str());
+
 	}
 
 	#pragma endregion
@@ -581,6 +586,7 @@ namespace {
 		c -= a;
 		c -= b;
 		ASSERT_STREQ("0", c.toString().c_str());
+
 	}
 
 	#pragma endregion
