@@ -18,7 +18,6 @@
 #include <string>
 #include <iostream>
 #include <cstdint>
-#include <tuple>
 #include "Types.h"
 #include "Exceptions.h"
 #include "BigIntUtilities.h"
