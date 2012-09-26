@@ -132,10 +132,10 @@ protected:
 	// Initialization logic is the same for all integer types
 	template <class T>
 	void constructFromInteger(const T iInteger) {
+		mDigits = std::vector<store_t>();
 		// If input fits a single digit we initialize it
 		// static cast is safe: we dont accept integer types bigger than long long
 		if ( static_cast<unsigned long long>(iInteger) < mBase - 1 ) {
-			mDigits = std::vector<store_t>();
 			store_t digit = static_cast<store_t>(iInteger);
 			mDigits.push_back(digit);
 		} else {
