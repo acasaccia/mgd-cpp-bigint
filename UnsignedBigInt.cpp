@@ -353,20 +353,22 @@ const UnsignedBigInt UnsignedBigInt::operator~() const {
 
 void UnsignedBigInt::print(std::ostream& os) const {
 
-#ifdef BIGINT_PSEUDO_DECIMAL_BASE
-
-	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
-    os << mDigits.front(); // no padding for most significant digit
-    for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
-            os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits.at(i);
-    }
-
-#else
-
 	if (*this == 0) {
 		os << "0";
 		return;
 	}
+
+#ifdef BIGINT_PSEUDO_DECIMAL_BASE
+
+	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
+
+    os << mDigits.front(); // no padding for most significant digit
+
+	for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
+		os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits.at(i);
+	}
+
+#else
 
 	store_t chunk_base = getPrintBase();
 	int chunk_digits = static_cast<int>( log10(static_cast<long double>(chunk_base) ) );
@@ -381,8 +383,8 @@ void UnsignedBigInt::print(std::ostream& os) const {
 
 	while ( this_copy > 0 ) {
 		this_copy.divide(chunk_base, result);
-		chunk = *(result.remainder);
-		this_copy = *(result.quotient);
+		chunk = result.remainder->mDigits.at(0);
+		this_copy.mDigits = result.quotient->mDigits;
 		buffer = std::to_string(static_cast<unsigned long long>(chunk.mDigits.front()));
 		BigIntUtilities::leftPadChunk(buffer, chunk_digits);
 		chunksVector.insert(chunksVector.begin(), std::string(buffer));
@@ -529,14 +531,14 @@ void UnsignedBigInt::divide(const UnsignedBigInt &iDivisor, DivisionResult &oDiv
 UnsignedBigInt& UnsignedBigInt::quotient(const UnsignedBigInt &iThat) {
 	DivisionResult result = DivisionResult();
 	divide(iThat, result);
-	*this = *(result.quotient);
+	mDigits = result.quotient->mDigits;
 	return *this;
 }
 
 UnsignedBigInt& UnsignedBigInt::remainder(const UnsignedBigInt &iThat) {
 	DivisionResult result = DivisionResult();
 	divide(iThat, result);
-	*this = *(result.remainder);
+	mDigits = result.remainder->mDigits;
 	return *this;
 }
 
