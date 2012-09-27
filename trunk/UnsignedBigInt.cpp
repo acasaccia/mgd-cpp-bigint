@@ -14,6 +14,8 @@
 #include <regex>
 
 const calc_t UnsignedBigInt::mBase = UnsignedBigInt::initializeBase();
+const store_t UnsignedBigInt::mPrintBase = UnsignedBigInt::initializePrintBase();
+const int UnsignedBigInt::mChunkDigits = UnsignedBigInt::initializeChunkDigits();
 
 #pragma region Constructors
 
@@ -360,18 +362,15 @@ void UnsignedBigInt::print(std::ostream& os) const {
 
 #ifdef BIGINT_PSEUDO_DECIMAL_BASE
 
-	calc_t decimalDigitsInADigit = static_cast<calc_t>( log10(static_cast<long double>(mBase) ) );
-
     os << mDigits.front(); // no padding for most significant digit
 
 	for ( digits_size_t i = 1; i < mDigits.size() ; i++) {
-		os << std::setfill('0') << std::setw(decimalDigitsInADigit) << mDigits.at(i);
+		os << std::setfill('0') << std::setw(mChunkDigits) << mDigits.at(i);
 	}
 
 #else
 
-	store_t chunk_base = getPrintBase();
-	int chunk_digits = static_cast<int>( log10(static_cast<long double>(chunk_base) ) );
+	
 
 	std::string buffer;
 	std::vector<const std::string> chunksVector;
@@ -386,7 +385,7 @@ void UnsignedBigInt::print(std::ostream& os) const {
 		chunk = result.remainder->mDigits.at(0);
 		this_copy.mDigits = result.quotient->mDigits;
 		buffer = std::to_string(static_cast<unsigned long long>(chunk.mDigits.front()));
-		BigIntUtilities::leftPadChunk(buffer, chunk_digits);
+		BigIntUtilities::leftPadChunk(buffer, mChunkDigits);
 		chunksVector.insert(chunksVector.begin(), std::string(buffer));
 	}
 
@@ -426,34 +425,36 @@ std::vector<bool> UnsignedBigInt::digitToBinary(store_t iDigit) {
 #pragma region Protected Methods
 
 calc_t UnsignedBigInt::initializeBase() {
-
 #ifdef BIGINT_PSEUDO_DECIMAL_BASE
-
-	calc_t max_value = static_cast<calc_t>(std::numeric_limits<store_t>::max());
-	calc_t base = 1, prev_base = 1;
-	while (base >= prev_base && base < max_value) {
-		prev_base = base;
-		base *= 10;
-	}
-	return static_cast<store_t>(prev_base);
-
+	return largestPowerOfTenThatFits(std::numeric_limits<store_t>::max());
 #else
-	
 	return static_cast<calc_t>(std::numeric_limits<store_t>::max());
-
 #endif
-	
 }
 
-const store_t UnsignedBigInt::getPrintBase() const {
-	// largest power of ten that fits store_t
-	calc_t max_value = mBase - 1;
+store_t UnsignedBigInt::initializePrintBase() {
+#ifdef BIGINT_PSEUDO_DECIMAL_BASE
+	return mBase;
+#else
+	return static_cast<store_t>(largestPowerOfTenThatFits(mBase));
+#endif
+}
+
+calc_t UnsignedBigInt::largestPowerOfTenThatFits(calc_t max) {
 	calc_t base = 1, prev_base = 1;
-	while (base >= prev_base && base < max_value) {
+	while (base >= prev_base && base < max) {
 		prev_base = base;
 		base *= 10;
 	}
-	return static_cast<store_t>(prev_base);
+	return prev_base;
+}
+
+int UnsignedBigInt::initializeChunkDigits() {
+#ifdef BIGINT_PSEUDO_DECIMAL_BASE
+	return static_cast<int>( log10(static_cast<long double>(mBase) ) );
+#else
+	return static_cast<int>( log10(static_cast<long double>(mPrintBase) ) );
+#endif
 }
 
 void UnsignedBigInt::trimLeadingZeros() {
