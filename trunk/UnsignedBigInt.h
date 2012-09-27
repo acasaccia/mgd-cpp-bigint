@@ -146,7 +146,7 @@ protected:
 		} else {
 			// else we convert to string and use string constructor
 			// static_cast<unsigned long long>() is needed until VS11 will fully implement the new standard
-			UnsignedBigInt tmp = UnsignedBigInt( std::to_string( static_cast<unsigned long long>(iInteger) ) );
+			UnsignedBigInt tmp = std::to_string( static_cast<unsigned long long>(iInteger) );
 			mDigits = tmp.mDigits;
 		}
 	}
