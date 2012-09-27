@@ -457,10 +457,8 @@ const store_t UnsignedBigInt::getPrintBase() const {
 }
 
 void UnsignedBigInt::trimLeadingZeros() {
-	std::vector<store_t>::iterator it = mDigits.begin();
-	while ( *it == 0 && mDigits.size() > 1 ) {
-		it = mDigits.erase(it);
-		it = mDigits.begin();
+	while ( mDigits.size() > 1 && mDigits.front() == 0 ) {
+		mDigits.erase(mDigits.begin());
 	}
 }
 
