@@ -12,7 +12,7 @@
 
 // Uncomment the following to use the largest power of 10 that fits store_t
 // as base for internal representation.
-#define BIGINT_PSEUDO_DECIMAL_BASE true
+// #define BIGINT_PSEUDO_DECIMAL_BASE true
 
 #include <vector>
 #include <string>
