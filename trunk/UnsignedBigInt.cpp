@@ -380,7 +380,7 @@ void UnsignedBigInt::print(std::ostream& os) const {
 	DivisionResult result = DivisionResult();
 
 	while ( this_copy > 0 ) {
-		this_copy.divide(chunk_base, result);
+		this_copy.divide(mPrintBase, result);
 		chunk = result.remainder->mDigits.at(0);
 		this_copy.mDigits = result.quotient->mDigits;
 		buffer = std::to_string(static_cast<unsigned long long>(chunk.mDigits.front()));
