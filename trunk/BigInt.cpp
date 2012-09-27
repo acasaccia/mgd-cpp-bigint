@@ -166,7 +166,7 @@ bool BigInt::operator>=(const BigInt &iThat) const {
 
 BigInt BigInt::operator-() const {
 	BigInt result(*this);
-	result.mSign = ( result.mSign == POSITIVE ? NEGATIVE : POSITIVE);
+	result.mSign = ( result.mSign == POSITIVE ? NEGATIVE : POSITIVE );
 	return result;
 }
 
@@ -271,10 +271,9 @@ void BigInt::print(std::ostream& os) const {
 }
 
 std::string BigInt::toString() const {
-	std::string returnString;
-	std::stringstream ss;
+	std::stringstream ss("", std::stringstream::in | std::stringstream::out);
     ss << *this;
-	return returnString = ss.str();
+	return ss.str();
 }
 
 std::vector<bool> BigInt::digitToBinary(store_t iDigit) {
