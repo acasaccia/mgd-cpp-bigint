@@ -54,12 +54,11 @@ UnsignedBigInt::UnsignedBigInt(const std::string &iString) {
 
 	store_t carry;
 	calc_t sum, digit;
-
-	char digit_char;
-
-	for ( std::string::size_type i = 0; i != cleanString.size(); ++i ) {
-		digit_char = cleanString.at(i);
-		carry = static_cast<calc_t>(atoi(&digit_char));
+	std::string tmp;
+	
+	for ( std::string::size_type i = 0; i < cleanString.size(); ++i ) {
+		tmp = std::string(1, cleanString[i]);
+		carry = static_cast<calc_t>(std::strtoul(tmp.c_str(),NULL,10));
 
 		for ( digits_size_t j = mDigits.size(); j --> 0 ;) {
 			digit = static_cast<calc_t>(mDigits.at(j));

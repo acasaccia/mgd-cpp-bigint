@@ -117,10 +117,3 @@ missing digits are considered zeros. For (signed) BigInt sign is taken into
 account: "+" is a true value, "-" a false one.
 
 ===============================================================================
-
-KNOWN BUGS
-
-I must have used an uninitiliazed variable somewhere: compiling in Release
-occasionally gives undefined behaviour.
-
-===============================================================================
