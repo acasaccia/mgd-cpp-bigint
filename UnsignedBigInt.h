@@ -28,7 +28,9 @@ class UnsignedBigInt {
 public:
 
 	const static calc_t mBase;
+	const static store_t mPrintBase;
 	std::vector<store_t> mDigits;
+	const static int mChunkDigits;
 
 	#pragma region Constructors
 
@@ -121,7 +123,10 @@ protected:
 	#pragma region Protected Methods
 
 	static calc_t initializeBase();
-	const store_t getPrintBase() const;
+	static store_t initializePrintBase();
+	static int initializeChunkDigits();
+	static calc_t largestPowerOfTenThatFits(calc_t);
+
 	void UnsignedBigInt::trimLeadingZeros();
 	const UnsignedBigInt UnsignedBigInt::multiplyByDigit(const store_t &iMultiplier) const;
 	void divide(const UnsignedBigInt &iThat, DivisionResult &oDivisionResult);
