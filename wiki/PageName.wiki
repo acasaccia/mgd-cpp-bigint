@@ -35,8 +35,8 @@ At the moment, default for the library is to use pseudo-decimal base, which perf
 I put a `#define` on top of `UnsignedBigInt.h` which can be commented to use
 pseudo-binary base.
 
-  1 "The Algorithm Design Manual" Skiena S. pag. 423
-  2 My question on SO on how to pick the correct digit size: http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-fully-supported-by-hardware-arithmetics
+  1. "The Algorithm Design Manual" Skiena S. pag. 423
+  2. My question on SO on how to pick the correct digit size: http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-fully-supported-by-hardware-arithmetics
 
 ----
 =Unsigned BigInt arithmetics=
@@ -52,7 +52,7 @@ I internally implemented division with a method that returns both quotient and r
 For exponentation I used exponentation by squaring method:
 http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 
-  3 "The Art of Computer Programming", Knuth D. E. pag. 265
+  3. "The Art of Computer Programming", Knuth D. E. pag. 265
 
 ----
 =Implementation notes=
