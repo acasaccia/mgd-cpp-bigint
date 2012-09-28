@@ -37,7 +37,8 @@ pseudo-binary base.
 
 {{{
   1. "The Algorithm Design Manual" Skiena S. pag. 423
-  2. My question on SO on how to pick the correct digit size: http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-fully-supported-by-hardware-arithmetics
+  2. My question on SO on how to pick the correct digit size:
+  http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-fully-supported-by-hardware-arithmetics
 }}}
 
 ----
