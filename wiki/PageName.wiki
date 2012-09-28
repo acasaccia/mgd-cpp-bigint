@@ -1,11 +1,13 @@
-=SIGNED ARBITRARY BIG INTEGERS=
+#summary Documentation
+
+=Signed arbitrary big integers=
 
 I designed BigInt dividing the responsibilities of handling the arithmetics and treating the signs of operations.
 UnsignedBigInt implements the basic arithmetics, while BigInt encapsulates a magnitude (an UnsignedBigInt) and a sign.
 The BigInt implementation consists in forwarding to UnsignedBigInt all the arithmetics making the necessary sign juggling to perform valid unsigned operations.
 
 ----
-=UNSIGNED BIGINT INTERNAL REPRESENTATION=
+=Unsigned BigInt internal representation=
 
 Performance-wise the ideal choice is to use as base the square root of the largest integer supported fully by hardware arithmetics. Larger bases allow to represent the same number with less digits, and avoiding overflow grants us the best efficiency over the used hardware. [1]
 
@@ -38,7 +40,7 @@ pseudo-binary base.
 	 http://stackoverflow.com/questions/12018410/how-do-i-find-the-largest-integer-fully-supported-by-hardware-arithmetics
 
 ----
-=UNSIGNED BIGINT ARITHMETICS=
+=Unsigned BigInt arithmetics=
 
 All binary operators have been implemented in terms of their compound operators, so look at those to see the actual code.
 
@@ -54,7 +56,7 @@ http://en.wikipedia.org/wiki/Exponentiation_by_squaring
 [3] "The Art of Computer Programming", Knuth D. E. pag. 265
 
 ----
-=IMPLEMENTATION NOTES=
+=Implementation notes=
 
 == Remainder Sign ==
 
