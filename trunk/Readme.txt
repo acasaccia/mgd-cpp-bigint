@@ -10,9 +10,13 @@ date 5 August 2012
 
 SIGNED ARBITRARY BIG INTEGERS
 
-Having UnsignedBigInt up and running I thinked of BigInt as an UnsignedBigInt
-with a sign. I forwarded to UnsignedBigInt all the arithmetics making the
-necessary sign juggling to perform valid unsigned operations.
+I designed BigInt dividing the responsibilities of handling the arithmetics and
+treating the signs of operations.
+UnsignedBigInt implements the basic arithmetics, while BigInt encapsulates a
+magnitude (an UnsignedBigInt) and a sign.
+The BigInt implementation consists in forwarding to UnsignedBigInt all the
+arithmetics making the necessary sign juggling to perform valid unsigned
+operations.
 
 ===============================================================================
 
@@ -45,7 +49,7 @@ I started developing the library using as base for the internal representation
 the largest power of ten that fitted into the chosen store type (i will call
 it "pseudo-decimal" base). That saved memory and gave a performance boost
 compared to decimal representation. It saved me having to bother for conversions,
-but most important, being the internal representation human readable debugging
+and most important, being the internal representation human readable debugging
 has been a lot easier.
 
 When I had the basic arithmetic up and running, I implemented an algorithm for
@@ -54,7 +58,8 @@ conversion to a human readable base, so could switch to an internal 2^32
 
 At the moment, default for the library is to use pseudo-decimal base, which
 performs better due to the poor implementation of the toString() algorithm for
-different bases (or of divide() on which it heavily relies).
+different bases (or probably of division on which it heavily relies, I didn't
+implement a "division by single digit" algorithm yet).
 
 I put a #define on top of UnsignedBigInt.h which can be commented to use
 pseudo-binary base.
