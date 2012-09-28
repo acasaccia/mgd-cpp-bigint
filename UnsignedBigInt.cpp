@@ -433,7 +433,7 @@ calc_t UnsignedBigInt::initializeBase() {
 
 store_t UnsignedBigInt::initializePrintBase() {
 #ifdef BIGINT_PSEUDO_DECIMAL_BASE
-	return mBase;
+	return static_cast<store_t>(mBase);
 #else
 	return static_cast<store_t>(largestPowerOfTenThatFits(mBase));
 #endif
