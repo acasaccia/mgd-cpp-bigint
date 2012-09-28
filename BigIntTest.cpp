@@ -377,7 +377,7 @@ namespace {
 #ifdef BIGINT_PSEUDO_DECIMAL_BASE
 
 		// this is not done with binary base because outputting the huge number with the
-		// base conversion toString method would take too long
+		// base conversion toString method would take too long (about 10 minutes on my 3Ghz Dual-Core)
 
 		a = UnsignedBigInt("214124124431412132545");
 		b = UnsignedBigInt("1840");
